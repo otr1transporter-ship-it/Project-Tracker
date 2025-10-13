@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        // STEP 1: Replace this with YOUR Firebase config
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY_HERE",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // App State
+        let projects = [
+            {
+                id: 1,
+                name: 'Tricks of the Trade',
+                type: 'Non-Fiction',
+                status: 'draft-complete',
+                progress: 95,
+                wordCount: 48000,
+                targetWords: 50000,
+                completionTarget: '2025-10-15',
+                lastWorked: '2024-09-27',
+                nextActions: [
+                    'Final read-through for consistency',
+                    'Create book description/marketing copy',
+                    'Choose publishing platform (KDP vs. IngramSpark)'
+                ],
+                notes: 'All 20 chapters written. Appendices A-G complete.',
+                icon: '🚗'
+            },
+            {
+                id: 2,
+                name: 'Conflict to Connection',
+                type: 'Non-Fiction',
+                status: 'in-progress',
+                progress: 75,
+                wordCount: 35000,
+                targetWords: 50000,
+                completionTarget: '2025-11-30',
+                nextActions: [
+                    'Write Chapter 10: Reading the Unspoken',
+                    'Add citations to chapters 4 & 6',
+                    'Review chapters 1-9 for consistency'
+                ],
+                notes: 'Chapters 1-9 complete. Chapters 10-12 are placeholders.',
+                icon: '🤝'
+            },
+            {
+                id: 3,
+                name: "Ketu's Father",
+                type: 'Fiction',
+                status: 'early-draft',
+                progress: 25,
+                wordCount: 0,
+                targetWords: 80000,
+                nextActions: [
+                    'Define protagonist arc',
+                    'Outline major plot points',
+                    'Write first 3 chapters'
+                ],
+                notes: 'Early development stage.',
+                icon: '📖'
+            },
+            {
+                id: 4,
+                name: 'Middle Mesa',
+                type: 'Fiction',
+                status: 'early-draft',
+                progress: 15,
+                wordCount: 0,
+                targetWords: 90000,
+                nextActions: [
+                    'Complete world-building',
+                    'Character profiles',
+                    'Chapter outline'
+                ],
+                notes: 'Concept development phase.',
+                icon: '🏜️'
+            },
+            {
+                id: 5,
+                name: 'Zone Tracker',
+                type: 'Product',
+                status: 'concept',
+                progress: 10,
+                wordCount: 0,
+                targetWords: 0,
+                nextActions: [
+                    'Define core system components',
+                    'Create sample daily page',
+                    'Test system for one week'
+                ],
+                notes: 'Personal daily guide concept.',
+                icon: '⚡'
+            },
+            {
+                id: 6,
+                name: 'Project Brett',
+                type: 'Short Story',
+                status: 'draft-complete',
+                progress: 85,
+                wordCount: 7500,
+                targetWords: 8000,
+                completionTarget: '',
+                lastWorked: '2024-09-29',
+                nextActions: [
+                    "Implement Claude's suggestions",
+                    'Review revised sections for flow',
+                    'Final polish pass'
+                ],
+                notes: 'Draft complete, needs revisions.',
+                icon: '📝'
+            }
+        ];
+
+        let sessionLogs = [
+            { date: '2024-09-27', project: 'Tricks of the Trade', work: 'Recovered manuscript, reorganized', hours: 3 },
+            { date: '2024-09-29', project: 'Project Brett', work: 'Added to tracker, draft work', hours: 2 }
+        ];
+
+        let quickCaptures = [];
+
+        const saveData = async () => {
+            try {
+                await set(ref(database, 'projectTracker'), {
+                    projects,
+                    sessionLogs,
+                    quickCaptures,
+                    lastUpdated: new Date().toISOString()
+                });
+                console.log('Data saved to Firebase');
+            } catch (error) {
+                console.error('Save error:', error);
+            }
+        };
+
+        const loadData = async () => {
+            try {
+                const snapshot = await get(ref(database, 'projectTracker'));
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    projects = data.projects || projects;
+                    sessionLogs = data.sessionLogs || sessionLogs;
+                    quickCaptures = data.quickCaptures || quickCaptures;
+                    render();
+                }
+            } catch (error) {
+                console.error('Load error:', error);
+            }
+        };
+
+        const render = () => {
+            const statusLabels = {
+                'concept': '💡 Concept',
+                'early-draft': '🌱 Early Draft',
+                'in-progress': '📝 In Progress',
+                'draft-complete': '✅ Draft Complete',
+                'published': '🎉 Published'
+            };
+
+            const statusColors = {
+                'concept': 'bg-purple-100 text-purple-800 border-purple-300',
+                'early-draft': 'bg-yellow-100 text-yellow-800 border-yellow-300',
+                'in-progress': 'bg-blue-100 text-blue-800 border-blue-300',
+                'draft-complete': 'bg-green-100 text-green-800 border-green-300',
+                'published': 'bg-emerald-100 text-emerald-800 border-emerald-300'
+            };
+
+            const totalWords = projects.reduce((sum, p) => sum + p.wordCount, 0);
+            const avgProgress = Math.round(projects.reduce((sum, p) => sum + p.progress, 0) / projects.length);
+
+            document.getElementById('app').innerHTML = `
+                <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+                    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg">
+                        <div class="max-w-7xl mx-auto px-4 py-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h1 class="text-3xl font-bold">📚 Project Tracker</h1>
+                                    <p class="text-indigo-100 mt-1">Last updated: ${new Date().toLocaleDateString()}</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm text-indigo-100">Total Words</div>
+                                    <div class="text-3xl font-bold">${totalWords.toLocaleString()}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="max-w-7xl mx-auto px-4 py-6">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-indigo-500">
+                                <div class="text-sm text-gray-600">Active Projects</div>
+                                <div class="text-2xl font-bold text-indigo-600">${projects.length}</div>
+                            </div>
+                            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+                                <div class="text-sm text-gray-600">Avg Progress</div>
+                                <div class="text-2xl font-bold text-green-600">${avgProgress}%</div>
+                            </div>
+                            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
+                                <div class="text-sm text-gray-600">Total Words</div>
+                                <div class="text-2xl font-bold text-purple-600">${totalWords.toLocaleString()}</div>
+                            </div>
+                            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
+                                <div class="text-sm text-gray-600">Sessions</div>
+                                <div class="text-2xl font-bold text-orange-600">${sessionLogs.length}</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-lg shadow-md p-6 mb-6">
+                            <h2 class="text-xl font-bold text-amber-900 mb-2">🎯 Current Focus: ${projects[0].icon} ${projects[0].name}</h2>
+                            <div class="text-amber-700">Sprint Goal: Ready for self-publishing</div>
+                            <div class="text-amber-600 text-sm mt-2">Next: ${projects[0].nextActions[0]}</div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            ${projects.map(project => `
+                                <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
+                                    <div class="flex items-start justify-between mb-4">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-3xl">${project.icon}</span>
+                                            <div>
+                                                <h3 class="text-xl font-bold text-gray-800">${project.name}</h3>
+                                                <div class="text-sm text-gray-500">${project.type}</div>
+                                            </div>
+                                        </div>
+                                        <span class="px-3 py-1 rounded-full text-xs font-semibold border ${statusColors[project.status]}">
+                                            ${statusLabels[project.status]}
+                                        </span>
+                                    </div>
+                                    <div class="mb-4">
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span class="text-gray-600">Progress</span>
+                                            <span class="font-semibold text-gray-800">${project.progress}%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-3">
+                                            <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full" style="width: ${project.progress}%"></div>
+                                        </div>
+                                    </div>
+                                    ${project.targetWords > 0 ? `
+                                        <div class="text-sm text-gray-600 mb-3">
+                                            📄 ${project.wordCount.toLocaleString()} / ${project.targetWords.toLocaleString()} words
+                                        </div>
+                                    ` : ''}
+                                    ${project.completionTarget ? `
+                                        <div class="text-sm text-gray-600 mb-3">
+                                            📅 Target: ${new Date(project.completionTarget).toLocaleDateString()}
+                                        </div>
+                                    ` : ''}
+                                    <div class="mb-3">
+                                        <div class="text-sm font-semibold text-gray-700 mb-2">Next Actions:</div>
+                                        <div class="space-y-2">
+                                            ${project.nextActions.map(action => `
+                                                <div class="flex items-start gap-2 text-sm p-2 rounded bg-gray-50 text-gray-700">
+                                                    <span class="flex-shrink-0">⭕</span>
+                                                    <span>${action}</span>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                    ${project.notes ? `
+                                        <div class="text-xs text-gray-500 italic bg-gray-50 p-2 rounded">${project.notes}</div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                            <h2 class="text-xl font-bold text-gray-800 mb-4">💡 Quick Capture</h2>
+                            <div class="flex gap-2 mb-4">
+                                <input type="text" id="captureInput" placeholder="Capture ideas..." 
+                                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg">
+                                <button onclick="window.addCapture()" 
+                                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                                    Add
+                                </button>
+                            </div>
+                            <div id="captures" class="space-y-2">
+                                ${quickCaptures.length === 0 ? 
+                                    '<div class="text-gray-400 text-center py-4">No captures yet</div>' :
+                                    quickCaptures.map((c, i) => `
+                                        <div class="flex justify-between bg-gray-50 p-3 rounded-lg">
+                                            <div>
+                                                <div class="text-gray-800">${c.text}</div>
+                                                <div class="text-xs text-gray-500">${c.date}</div>
+                                            </div>
+                                            <button onclick="window.deleteCapture(${i})" class="text-red-500">🗑️</button>
+                                        </div>
+                                    `).join('')
+                                }
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-lg p-6">
+                            <h2 class="text-xl font-bold text-gray-800 mb-4">🔄 Session Log</h2>
+                            <div class="space-y-3">
+                                ${sessionLogs.map(log => `
+                                    <div class="border-l-4 border-indigo-500 bg-gray-50 p-4 rounded-r-lg">
+                                        <div class="flex justify-between mb-1">
+                                            <div class="font-semibold text-gray-800">${log.project}</div>
+                                            <div class="text-sm text-gray-500">${log.date}</div>
+                                        </div>
+                                        <div class="text-gray-600 text-sm">${log.work}</div>
+                                        <div class="text-xs text-gray-500 mt-1">Time: ${log.hours} hours</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.addCapture = () => {
+            const input = document.getElementById('captureInput');
+            const text = input.value.trim();
+            if (text) {
+                quickCaptures.push({
+                    id: Date.now(),
+                    text,
+                    date: new Date().toLocaleDateString()
+                });
+                input.value = '';
+                saveData();
+                render();
+            }
+        };
+
+        window.deleteCapture = (index) => {
+            quickCaptures.splice(index, 1);
+            saveData();
+            render();
+        };
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await loadData();
+            render();
+        });
+    </script>
+</head>
+<body>
+    <div id="app">Loading...</div>
+</body>
+</html>
