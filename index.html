@@ -4,356 +4,941 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Tracker</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 9999;
+        }
+        
+        .login-screen.hidden {
+            display: none;
+        }
+        
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .login-box h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .login-box p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+        
+        .login-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .login-box button {
+            width: 100%;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .login-box button:hover {
+            background: #764ba2;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            font-size: 0.9em;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: none;
+        }
+        
+        .container.show {
+            display: block;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .sync-status {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        
+        .logout-btn:hover {
+            background: #764ba2;
+        }
+        
+        .notes-section {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .notes-section h2 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .notes-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            font-size: 1em;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        
+        .notes-counter {
+            font-size: 0.85em;
+            color: #856404;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.2s;
+        }
+        
+        .btn:hover {
+            background: #764ba2;
+        }
+        
+        .project-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.15);
+        }
+        
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+        
+        .project-title {
+            flex: 1;
+        }
+        
+        .project-title h2 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .project-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .status-complete {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-active {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-early {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .project-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9em;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-edit {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #138496;
+        }
+        
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #c82333;
+        }
+        
+        .project-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .detail-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-value {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .todos-section {
+            margin-top: 20px;
+        }
+        
+        .todos-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .todo-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        
+        .todo-item:hover {
+            background: #e9ecef;
+        }
+        
+        .todo-item.completed {
+            opacity: 0.6;
+        }
+        
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+        }
+        
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .todo-text {
+            flex: 1;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .todo-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+        
+        .todo-delete:hover {
+            background: #c82333;
+        }
+        
+        .add-todo {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .add-todo input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        
+        .add-todo input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .add-todo button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        
+        .add-todo button:hover {
+            background: #218838;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 20px;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+        
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .project-header {
+                flex-direction: column;
+            }
+            
+            .project-actions {
+                margin-top: 15px;
+            }
+            
+            .logout-btn {
+                position: static;
+                margin-top: 20px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <h1>🎯 Project Tracker</h1>
+            <p>Please enter password to access</p>
+            <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="off">
+            <button onclick="checkPassword()">Access Tracker</button>
+            <div class="error-message" id="errorMessage">Incorrect password. Please try again.</div>
+        </div>
+    </div>
+
+    <!-- Main Tracker -->
+    <div class="container" id="mainContainer">
+        <div class="header">
+            <button class="logout-btn" onclick="logout()">🔓 Logout</button>
+            <h1>🎯 Project Tracker</h1>
+            <div class="sync-status" id="syncStatus">🔄 Connecting...</div>
+        </div>
+        
+        <div class="notes-section">
+            <h2>📝 Session Notes (Max 20 words)</h2>
+            <textarea class="notes-input" id="notesInput" placeholder="Quick notes about today's session..."></textarea>
+            <div class="notes-counter" id="notesCounter">0 / 20 words</div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="openAddProjectModal()">+ Add New Project</button>
+        </div>
+        
+        <div id="projectsList"></div>
+    </div>
+
+    <!-- Add/Edit Project Modal -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProjectModal()">&times;</span>
+            <div class="modal-header" id="modalTitle">Add New Project</div>
+            <div class="form-group">
+                <label>Project Name*</label>
+                <input type="text" id="projectName" placeholder="e.g., Tricks of the Trade">
+            </div>
+            <div class="form-group">
+                <label>Status*</label>
+                <select id="projectStatus">
+                    <option value="early">🌱 Early Draft</option>
+                    <option value="active">📝 Active Development</option>
+                    <option value="complete">✅ Complete Draft</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Word Count</label>
+                <input type="number" id="projectWordCount" placeholder="0">
+            </div>
+            <div class="form-group">
+                <label>Target Completion Date</label>
+                <input type="date" id="projectTarget">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="projectDescription" rows="3" placeholder="Brief project description..."></textarea>
+            </div>
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button class="btn" onclick="saveProject()">Save Project</button>
+                <button class="btn" style="background: #6c757d;" onclick="closeProjectModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
-        // STEP 1: Replace this with YOUR Firebase config
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getDatabase, ref, set, onValue, remove, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
         const firebaseConfig = {
-  apiKey: "AIzaSy...",
-  authDomain: "project-tracker-109e8.firebaseapp.com",
-  databaseURL: "https://project-tracker-109e8-default-rtdb.firebaseio.com",
-  projectId: "project-tracker-109e8",
-  storageBucket: "project-tracker-109e8.appspot.com",
-  messagingSenderId: "123456",
-  appId: "1:123456:web:abc123"
-};
- 
+            apiKey: "AIzaSyBIsG9oUnflAo0lsGCnco_jkGtEVtO4gkU",
+            authDomain: "steve-s-bill-tracker.firebaseapp.com",
+            projectId: "steve-s-bill-tracker",
+            storageBucket: "steve-s-bill-tracker.firebasestorage.app",
+            messagingSenderId: "717932357361",
+            appId: "1:717932357361:web:d6a4fd10eb676c802f6b50",
+            databaseURL: "https://steve-s-bill-tracker-default-rtdb.firebaseio.com"
+        };
 
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
+        const projectsRef = ref(database, 'projects');
+        const notesRef = ref(database, 'projectNotes');
 
-        // App State
-        let projects = [
-            {
-                id: 1,
-                name: 'Tricks of the Trade',
-                type: 'Non-Fiction',
-                status: 'draft-complete',
-                progress: 95,
-                wordCount: 48000,
-                targetWords: 50000,
-                completionTarget: '2025-10-15',
-                lastWorked: '2024-09-27',
-                nextActions: [
-                    'Final read-through for consistency',
-                    'Create book description/marketing copy',
-                    'Choose publishing platform (KDP vs. IngramSpark)'
-                ],
-                notes: 'All 20 chapters written. Appendices A-G complete.',
-                icon: '🚗'
-            },
-            {
-                id: 2,
-                name: 'Conflict to Connection',
-                type: 'Non-Fiction',
-                status: 'in-progress',
-                progress: 75,
-                wordCount: 35000,
-                targetWords: 50000,
-                completionTarget: '2025-11-30',
-                nextActions: [
-                    'Write Chapter 10: Reading the Unspoken',
-                    'Add citations to chapters 4 & 6',
-                    'Review chapters 1-9 for consistency'
-                ],
-                notes: 'Chapters 1-9 complete. Chapters 10-12 are placeholders.',
-                icon: '🤝'
-            },
-            {
-                id: 3,
-                name: "Ketu's Father",
-                type: 'Fiction',
-                status: 'early-draft',
-                progress: 25,
-                wordCount: 0,
-                targetWords: 80000,
-                nextActions: [
-                    'Define protagonist arc',
-                    'Outline major plot points',
-                    'Write first 3 chapters'
-                ],
-                notes: 'Early development stage.',
-                icon: '📖'
-            },
-            {
-                id: 4,
-                name: 'Middle Mesa',
-                type: 'Fiction',
-                status: 'early-draft',
-                progress: 15,
-                wordCount: 0,
-                targetWords: 90000,
-                nextActions: [
-                    'Complete world-building',
-                    'Character profiles',
-                    'Chapter outline'
-                ],
-                notes: 'Concept development phase.',
-                icon: '🏜️'
-            },
-            {
-                id: 5,
-                name: 'Zone Tracker',
-                type: 'Product',
-                status: 'concept',
-                progress: 10,
-                wordCount: 0,
-                targetWords: 0,
-                nextActions: [
-                    'Define core system components',
-                    'Create sample daily page',
-                    'Test system for one week'
-                ],
-                notes: 'Personal daily guide concept.',
-                icon: '⚡'
-            },
-            {
-                id: 6,
-                name: 'Project Brett',
-                type: 'Short Story',
-                status: 'draft-complete',
-                progress: 85,
-                wordCount: 7500,
-                targetWords: 8000,
-                completionTarget: '',
-                lastWorked: '2024-09-29',
-                nextActions: [
-                    "Implement Claude's suggestions",
-                    'Review revised sections for flow',
-                    'Final polish pass'
-                ],
-                notes: 'Draft complete, needs revisions.',
-                icon: '📝'
-            }
-        ];
+        let projects = [];
+        let editingProjectId = null;
 
-        let sessionLogs = [
-            { date: '2024-09-27', project: 'Tricks of the Trade', work: 'Recovered manuscript, reorganized', hours: 3 },
-            { date: '2024-09-29', project: 'Project Brett', work: 'Added to tracker, draft work', hours: 2 }
-        ];
-
-        let quickCaptures = [];
-
-        const saveData = async () => {
-            try {
-                await set(ref(database, 'projectTracker'), {
-                    projects,
-                    sessionLogs,
-                    quickCaptures,
-                    lastUpdated: new Date().toISOString()
-                });
-                console.log('Data saved to Firebase');
-            } catch (error) {
-                console.error('Save error:', error);
+        // Password protection
+        const CORRECT_PASSWORD = "Raineer";
+        
+        if (sessionStorage.getItem('projectTrackerAuth') === 'true') {
+            showMainApp();
+        }
+        
+        window.checkPassword = function() {
+            const input = document.getElementById('passwordInput');
+            const errorMsg = document.getElementById('errorMessage');
+            
+            if (input.value === CORRECT_PASSWORD) {
+                sessionStorage.setItem('projectTrackerAuth', 'true');
+                showMainApp();
+            } else {
+                errorMsg.classList.add('show');
+                input.value = '';
+                input.focus();
             }
         };
+        
+        window.logout = function() {
+            sessionStorage.removeItem('projectTrackerAuth');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainContainer').classList.remove('show');
+            document.getElementById('passwordInput').value = '';
+        };
+        
+        function showMainApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainContainer').classList.add('show');
+        }
+        
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
 
-        const loadData = async () => {
-            try {
-                const snapshot = await get(ref(database, 'projectTracker'));
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    projects = data.projects || projects;
-                    sessionLogs = data.sessionLogs || sessionLogs;
-                    quickCaptures = data.quickCaptures || quickCaptures;
-                    render();
+        // Load notes
+        onValue(notesRef, (snapshot) => {
+            const notes = snapshot.val();
+            if (notes) {
+                document.getElementById('notesInput').value = notes;
+                updateNotesCounter();
+            }
+        });
+
+        // Notes word counter
+        document.getElementById('notesInput').addEventListener('input', function() {
+            updateNotesCounter();
+            const words = this.value.trim().split(/\s+/).filter(w => w.length > 0);
+            if (words.length > 20) {
+                const limited = words.slice(0, 20).join(' ');
+                this.value = limited;
+                updateNotesCounter();
+            }
+            set(notesRef, this.value);
+        });
+
+        function updateNotesCounter() {
+            const text = document.getElementById('notesInput').value.trim();
+            const words = text.split(/\s+/).filter(w => w.length > 0);
+            const count = text.length === 0 ? 0 : words.length;
+            document.getElementById('notesCounter').textContent = `${count} / 20 words`;
+        }
+
+        // Load projects
+        onValue(projectsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                projects = Object.entries(data).map(([id, project]) => ({ id, ...project }));
+            } else {
+                initializeDefaultProjects();
+            }
+            renderProjects();
+            updateSyncStatus(true);
+        });
+
+        function initializeDefaultProjects() {
+            const defaultProjects = [
+                {
+                    name: "Tricks of the Trade - Car Buying Guide",
+                    status: "complete",
+                    wordCount: 68000,
+                    targetDate: "2025-11-01",
+                    description: "Complete car buying insider guide ready for publishing",
+                    todos: [
+                        { text: "Final read-through for consistency", completed: false },
+                        { text: "Create book description/marketing copy", completed: false },
+                        { text: "Choose publishing platform (KDP vs IngramSpark)", completed: false }
+                    ]
+                },
+                {
+                    name: "Conflict to Connection",
+                    status: "active",
+                    wordCount: 52000,
+                    targetDate: "2025-12-15",
+                    description: "Communication guide - 9 of 12 chapters complete",
+                    todos: [
+                        { text: "Write Chapter 10: Reading the Unspoken", completed: false },
+                        { text: "Add citations to chapters 4 & 6", completed: false },
+                        { text: "Review chapters 1-9 for consistency", completed: false }
+                    ]
+                },
+                {
+                    name: "Ketu's Father",
+                    status: "early",
+                    wordCount: 15000,
+                    targetDate: "2026-03-01",
+                    description: "Fiction project - early draft stage",
+                    todos: [
+                        { text: "Outline remaining chapters", completed: false },
+                        { text: "Develop main character arc", completed: false },
+                        { text: "Research historical setting", completed: false }
+                    ]
+                },
+                {
+                    name: "Middle Mesa",
+                    status: "early",
+                    wordCount: 8000,
+                    targetDate: "2026-06-01",
+                    description: "Fiction project - early draft stage",
+                    todos: [
+                        { text: "Complete character profiles", completed: false },
+                        { text: "Draft opening three chapters", completed: false },
+                        { text: "Establish setting and tone", completed: false }
+                    ]
                 }
-            } catch (error) {
-                console.error('Load error:', error);
+            ];
+
+            defaultProjects.forEach((project, index) => {
+                const projectId = `project_${Date.now()}_${index}`;
+                set(ref(database, `projects/${projectId}`), project);
+            });
+        }
+
+        function updateSyncStatus(synced) {
+            const status = document.getElementById('syncStatus');
+            status.textContent = synced ? '✅ Synced Across All Devices' : '🔄 Syncing...';
+        }
+
+        window.openAddProjectModal = function() {
+            editingProjectId = null;
+            document.getElementById('modalTitle').textContent = 'Add New Project';
+            document.getElementById('projectName').value = '';
+            document.getElementById('projectStatus').value = 'early';
+            document.getElementById('projectWordCount').value = '';
+            document.getElementById('projectTarget').value = '';
+            document.getElementById('projectDescription').value = '';
+            document.getElementById('projectModal').classList.add('show');
+        };
+
+        window.openEditProjectModal = function(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            if (!project) return;
+
+            editingProjectId = projectId;
+            document.getElementById('modalTitle').textContent = 'Edit Project';
+            document.getElementById('projectName').value = project.name || '';
+            document.getElementById('projectStatus').value = project.status || 'early';
+            document.getElementById('projectWordCount').value = project.wordCount || '';
+            document.getElementById('projectTarget').value = project.targetDate || '';
+            document.getElementById('projectDescription').value = project.description || '';
+            document.getElementById('projectModal').classList.add('show');
+        };
+
+        window.closeProjectModal = function() {
+            document.getElementById('projectModal').classList.remove('show');
+            editingProjectId = null;
+        };
+
+        window.saveProject = function() {
+            const name = document.getElementById('projectName').value.trim();
+            const status = document.getElementById('projectStatus').value;
+            const wordCount = parseInt(document.getElementById('projectWordCount').value) || 0;
+            const targetDate = document.getElementById('projectTarget').value;
+            const description = document.getElementById('projectDescription').value.trim();
+
+            if (!name) {
+                alert('Please enter a project name');
+                return;
+            }
+
+            const projectData = {
+                name,
+                status,
+                wordCount,
+                targetDate,
+                description,
+                todos: []
+            };
+
+            updateSyncStatus(false);
+
+            if (editingProjectId) {
+                const existingProject = projects.find(p => p.id === editingProjectId);
+                if (existingProject && existingProject.todos) {
+                    projectData.todos = existingProject.todos;
+                }
+                update(ref(database, `projects/${editingProjectId}`), projectData).then(() => {
+                    closeProjectModal();
+                });
+            } else {
+                const projectId = `project_${Date.now()}`;
+                set(ref(database, `projects/${projectId}`), projectData).then(() => {
+                    closeProjectModal();
+                });
             }
         };
 
-        const render = () => {
-            const statusLabels = {
-                'concept': '💡 Concept',
-                'early-draft': '🌱 Early Draft',
-                'in-progress': '📝 In Progress',
-                'draft-complete': '✅ Draft Complete',
-                'published': '🎉 Published'
+        window.deleteProject = function(projectId) {
+            if (confirm('Are you sure you want to delete this project?')) {
+                updateSyncStatus(false);
+                remove(ref(database, `projects/${projectId}`));
+            }
+        };
+
+        window.addTodo = function(projectId) {
+            const input = document.getElementById(`todoInput_${projectId}`);
+            const text = input.value.trim();
+            
+            if (!text) return;
+
+            const project = projects.find(p => p.id === projectId);
+            if (!project) return;
+
+            const todos = project.todos || [];
+            todos.push({ text, completed: false });
+
+            updateSyncStatus(false);
+            update(ref(database, `projects/${projectId}`), { todos }).then(() => {
+                input.value = '';
+            });
+        };
+
+        window.toggleTodo = function(projectId, todoIndex) {
+            const project = projects.find(p => p.id === projectId);
+            if (!project || !project.todos) return;
+
+            project.todos[todoIndex].completed = !project.todos[todoIndex].completed;
+
+            updateSyncStatus(false);
+            update(ref(database, `projects/${projectId}`), { todos: project.todos });
+        };
+
+        window.deleteTodo = function(projectId, todoIndex) {
+            const project = projects.find(p => p.id === projectId);
+            if (!project || !project.todos) return;
+
+            project.todos.splice(todoIndex, 1);
+
+            updateSyncStatus(false);
+            update(ref(database, `projects/${projectId}`), { todos: project.todos });
+        };
+
+        function getStatusBadge(status) {
+            const badges = {
+                'early': '<span class="project-status status-early">🌱 Early Draft</span>',
+                'active': '<span class="project-status status-active">📝 Active Development</span>',
+                'complete': '<span class="project-status status-complete">✅ Complete Draft</span>'
             };
+            return badges[status] || badges['early'];
+        }
 
-            const statusColors = {
-                'concept': 'bg-purple-100 text-purple-800 border-purple-300',
-                'early-draft': 'bg-yellow-100 text-yellow-800 border-yellow-300',
-                'in-progress': 'bg-blue-100 text-blue-800 border-blue-300',
-                'draft-complete': 'bg-green-100 text-green-800 border-green-300',
-                'published': 'bg-emerald-100 text-emerald-800 border-emerald-300'
-            };
+        function renderProjects() {
+            const container = document.getElementById('projectsList');
+            
+            if (projects.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: white; padding: 40px; font-size: 1.2em;">No projects yet. Add your first project above!</p>';
+                return;
+            }
 
-            const totalWords = projects.reduce((sum, p) => sum + p.wordCount, 0);
-            const avgProgress = Math.round(projects.reduce((sum, p) => sum + p.progress, 0) / projects.length);
+            const sortedProjects = [...projects].sort((a, b) => {
+                const order = { complete: 0, active: 1, early: 2 };
+                return (order[a.status] || 3) - (order[b.status] || 3);
+            });
 
-            document.getElementById('app').innerHTML = `
-                <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-                    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg">
-                        <div class="max-w-7xl mx-auto px-4 py-6">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h1 class="text-3xl font-bold">📚 Project Tracker</h1>
-                                    <p class="text-indigo-100 mt-1">Last updated: ${new Date().toLocaleDateString()}</p>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-sm text-indigo-100">Total Words</div>
-                                    <div class="text-3xl font-bold">${totalWords.toLocaleString()}</div>
-                                </div>
+            const html = sortedProjects.map(project => {
+                const todos = project.todos || [];
+                const completedCount = todos.filter(t => t.completed).length;
+                const progressPercent = todos.length > 0 ? (completedCount / todos.length * 100).toFixed(0) : 0;
+
+                return `
+                    <div class="project-card">
+                        <div class="project-header">
+                            <div class="project-title">
+                                <h2>${project.name}</h2>
+                                ${getStatusBadge(project.status)}
+                            </div>
+                            <div class="project-actions">
+                                <button class="btn-small btn-edit" onclick="openEditProjectModal('${project.id}')">Edit</button>
+                                <button class="btn-small btn-delete" onclick="deleteProject('${project.id}')">Delete</button>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="max-w-7xl mx-auto px-4 py-6">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-indigo-500">
-                                <div class="text-sm text-gray-600">Active Projects</div>
-                                <div class="text-2xl font-bold text-indigo-600">${projects.length}</div>
+                        
+                        <div class="project-details">
+                            <div class="detail-item">
+                                <div class="detail-label">Word Count</div>
+                                <div class="detail-value">${project.wordCount.toLocaleString()} words</div>
                             </div>
-                            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
-                                <div class="text-sm text-gray-600">Avg Progress</div>
-                                <div class="text-2xl font-bold text-green-600">${avgProgress}%</div>
+                            <div class="detail-item">
+                                <div class="detail-label">Target Date</div>
+                                <div class="detail-value">${project.targetDate ? new Date(project.targetDate).toLocaleDateString() : 'Not set'}</div>
                             </div>
-                            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
-                                <div class="text-sm text-gray-600">Total Words</div>
-                                <div class="text-2xl font-bold text-purple-600">${totalWords.toLocaleString()}</div>
-                            </div>
-                            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
-                                <div class="text-sm text-gray-600">Sessions</div>
-                                <div class="text-2xl font-bold text-orange-600">${sessionLogs.length}</div>
+                            <div class="detail-item">
+                                <div class="detail-label">Progress</div>
+                                <div class="detail-value">${completedCount} / ${todos.length} tasks (${progressPercent}%)</div>
                             </div>
                         </div>
-
-                        <div class="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-lg shadow-md p-6 mb-6">
-                            <h2 class="text-xl font-bold text-amber-900 mb-2">🎯 Current Focus: ${projects[0].icon} ${projects[0].name}</h2>
-                            <div class="text-amber-700">Sprint Goal: Ready for self-publishing</div>
-                            <div class="text-amber-600 text-sm mt-2">Next: ${projects[0].nextActions[0]}</div>
-                        </div>
-
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                            ${projects.map(project => `
-                                <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
-                                    <div class="flex items-start justify-between mb-4">
-                                        <div class="flex items-center gap-3">
-                                            <span class="text-3xl">${project.icon}</span>
-                                            <div>
-                                                <h3 class="text-xl font-bold text-gray-800">${project.name}</h3>
-                                                <div class="text-sm text-gray-500">${project.type}</div>
-                                            </div>
-                                        </div>
-                                        <span class="px-3 py-1 rounded-full text-xs font-semibold border ${statusColors[project.status]}">
-                                            ${statusLabels[project.status]}
-                                        </span>
-                                    </div>
-                                    <div class="mb-4">
-                                        <div class="flex justify-between text-sm mb-1">
-                                            <span class="text-gray-600">Progress</span>
-                                            <span class="font-semibold text-gray-800">${project.progress}%</span>
-                                        </div>
-                                        <div class="w-full bg-gray-200 rounded-full h-3">
-                                            <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full" style="width: ${project.progress}%"></div>
-                                        </div>
-                                    </div>
-                                    ${project.targetWords > 0 ? `
-                                        <div class="text-sm text-gray-600 mb-3">
-                                            📄 ${project.wordCount.toLocaleString()} / ${project.targetWords.toLocaleString()} words
-                                        </div>
-                                    ` : ''}
-                                    ${project.completionTarget ? `
-                                        <div class="text-sm text-gray-600 mb-3">
-                                            📅 Target: ${new Date(project.completionTarget).toLocaleDateString()}
-                                        </div>
-                                    ` : ''}
-                                    <div class="mb-3">
-                                        <div class="text-sm font-semibold text-gray-700 mb-2">Next Actions:</div>
-                                        <div class="space-y-2">
-                                            ${project.nextActions.map(action => `
-                                                <div class="flex items-start gap-2 text-sm p-2 rounded bg-gray-50 text-gray-700">
-                                                    <span class="flex-shrink-0">⭕</span>
-                                                    <span>${action}</span>
-                                                </div>
-                                            `).join('')}
-                                        </div>
-                                    </div>
-                                    ${project.notes ? `
-                                        <div class="text-xs text-gray-500 italic bg-gray-50 p-2 rounded">${project.notes}</div>
-                                    ` : ''}
+                        
+                        ${project.description ? `<p style="color: #666; margin: 15px 0; line-height: 1.6;">${project.description}</p>` : ''}
+                        
+                        <div class="todos-section">
+                            <h3>📋 To-Do List</h3>
+                            ${todos.map((todo, index) => `
+                                <div class="todo-item ${todo.completed ? 'completed' : ''}">
+                                    <input 
+                                        type="checkbox" 
+                                        class="todo-checkbox" 
+                                        ${todo.completed ? 'checked' : ''}
+                                        onchange="toggleTodo('${project.id}', ${index})"
+                                    >
+                                    <div class="todo-text">${todo.text}</div>
+                                    <button class="todo-delete" onclick="deleteTodo('${project.id}', ${index})">Delete</button>
                                 </div>
                             `).join('')}
-                        </div>
-
-                        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-                            <h2 class="text-xl font-bold text-gray-800 mb-4">💡 Quick Capture</h2>
-                            <div class="flex gap-2 mb-4">
-                                <input type="text" id="captureInput" placeholder="Capture ideas..." 
-                                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg">
-                                <button onclick="window.addCapture()" 
-                                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                                    Add
-                                </button>
-                            </div>
-                            <div id="captures" class="space-y-2">
-                                ${quickCaptures.length === 0 ? 
-                                    '<div class="text-gray-400 text-center py-4">No captures yet</div>' :
-                                    quickCaptures.map((c, i) => `
-                                        <div class="flex justify-between bg-gray-50 p-3 rounded-lg">
-                                            <div>
-                                                <div class="text-gray-800">${c.text}</div>
-                                                <div class="text-xs text-gray-500">${c.date}</div>
-                                            </div>
-                                            <button onclick="window.deleteCapture(${i})" class="text-red-500">🗑️</button>
-                                        </div>
-                                    `).join('')
-                                }
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-lg shadow-lg p-6">
-                            <h2 class="text-xl font-bold text-gray-800 mb-4">🔄 Session Log</h2>
-                            <div class="space-y-3">
-                                ${sessionLogs.map(log => `
-                                    <div class="border-l-4 border-indigo-500 bg-gray-50 p-4 rounded-r-lg">
-                                        <div class="flex justify-between mb-1">
-                                            <div class="font-semibold text-gray-800">${log.project}</div>
-                                            <div class="text-sm text-gray-500">${log.date}</div>
-                                        </div>
-                                        <div class="text-gray-600 text-sm">${log.work}</div>
-                                        <div class="text-xs text-gray-500 mt-1">Time: ${log.hours} hours</div>
-                                    </div>
-                                `).join('')}
+                            
+                            <div class="add-todo">
+                                <input 
+                                    type="text" 
+                                    id="todoInput_${project.id}" 
+                                    placeholder="Add new task..."
+                                    onkeypress="if(event.key === 'Enter') addTodo('${project.id}')"
+                                >
+                                <button onclick="addTodo('${project.id}')">+ Add</button>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
-        };
+                `;
+            }).join('');
 
-        window.addCapture = () => {
-            const input = document.getElementById('captureInput');
-            const text = input.value.trim();
-            if (text) {
-                quickCaptures.push({
-                    id: Date.now(),
-                    text,
-                    date: new Date().toLocaleDateString()
-                });
-                input.value = '';
-                saveData();
-                render();
-            }
-        };
-
-        window.deleteCapture = (index) => {
-            quickCaptures.splice(index, 1);
-            saveData();
-            render();
-        };
-
-        window.addEventListener('DOMContentLoaded', async () => {
-            await loadData();
-            render();
-        });
+            container.innerHTML = html;
+        }
     </script>
-</head>
-<body>
-    <div id="app">Loading...</div>
 </body>
 </html>
