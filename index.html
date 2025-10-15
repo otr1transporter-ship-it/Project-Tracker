@@ -98,7 +98,7 @@
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 100%;
             margin: 0 auto;
             display: none;
         }
@@ -110,180 +110,330 @@
         .header {
             background: white;
             border-radius: 15px;
-            padding: 30px;
+            padding: 25px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             position: relative;
         }
         
         .header h1 {
-            font-size: 2.5em;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .kolbe-note {
-            background: #e7f3ff;
-            border-left: 4px solid #2196F3;
-            padding: 12px;
-            margin-top: 15px;
-            border-radius: 6px;
-            font-size: 0.9em;
-            color: #0d47a1;
-        }
-        
-        .kolbe-note strong {
-            display: block;
+            font-size: 2em;
+            color: #667eea;
             margin-bottom: 5px;
         }
         
         .sync-status {
+            font-size: 0.85em;
             color: #666;
-            font-size: 0.9em;
+            margin-top: 5px;
         }
         
         .logout-btn {
             position: absolute;
-            top: 30px;
-            right: 30px;
+            top: 25px;
+            right: 25px;
             background: #667eea;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 8px 15px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
         
         .logout-btn:hover {
             background: #764ba2;
         }
         
-        .controls {
+        .add-project-section {
             margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
         }
         
-        .btn {
-            background: #667eea;
+        .add-project-btn {
+            width: 100%;
+            background: #28a745;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background 0.2s;
-        }
-        
-        .btn:hover {
-            background: #764ba2;
-        }
-        
-        .drag-hint {
-            background: white;
             padding: 15px;
             border-radius: 10px;
-            margin-bottom: 15px;
-            text-align: center;
-            color: #667eea;
-            font-weight: 600;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+        }
+        
+        .add-project-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+        
+        .projects-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
         
         .project-card {
             background: white;
             border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             transition: all 0.2s;
-            cursor: move;
-            border-left: 6px solid #667eea;
+            border: 2px solid transparent;
         }
         
         .project-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
         
         .project-card.dragging {
             opacity: 0.5;
-            cursor: grabbing;
+            border: 2px dashed #667eea;
         }
         
         .project-card.drag-over {
-            border-top: 4px solid #28a745;
-        }
-        
-        .priority-badge {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            background: #667eea;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 1.1em;
+            border: 2px solid #667eea;
+            background: #f8f9ff;
         }
         
         .project-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #667eea;
+            margin-bottom: 15px;
             padding-bottom: 15px;
-            position: relative;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .project-title-section {
+            flex: 1;
+        }
+        
+        .project-priority {
+            font-size: 0.75em;
+            color: white;
+            background: #667eea;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: inline-block;
         }
         
         .project-title {
-            flex: 1;
-            margin-left: 80px;
-        }
-        
-        .project-title h2 {
-            font-size: 1.8em;
+            font-size: 1.5em;
+            font-weight: bold;
             color: #333;
             margin-bottom: 5px;
         }
         
         .project-status {
             display: inline-block;
-            padding: 6px 12px;
+            padding: 4px 12px;
             border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-active { background: #d4edda; color: #155724; }
+        .status-paused { background: #fff3cd; color: #856404; }
+        .status-complete { background: #cce5ff; color: #004085; }
+        
+        .drag-handle {
+            font-size: 1.8em;
+            color: #667eea;
+            cursor: grab;
+            padding: 0 10px;
+            user-select: none;
+        }
+        
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+        
+        .project-notes {
+            background: #fff9e6;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .project-notes label {
+            display: block;
             font-size: 0.85em;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-        
-        .status-complete {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-active {
-            background: #cce5ff;
-            color: #004085;
-        }
-        
-        .status-early {
-            background: #fff3cd;
+            font-weight: 600;
             color: #856404;
+            margin-bottom: 5px;
+        }
+        
+        .project-notes textarea {
+            width: 100%;
+            border: none;
+            background: transparent;
+            resize: none;
+            font-family: inherit;
+            font-size: 0.95em;
+            color: #333;
+            min-height: 40px;
+        }
+        
+        .project-notes textarea:focus {
+            outline: none;
+        }
+        
+        .word-counter {
+            font-size: 0.75em;
+            color: #999;
+            text-align: right;
+            margin-top: 3px;
+        }
+        
+        .word-counter.over-limit {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .todos-section {
+            margin-bottom: 15px;
+        }
+        
+        .todos-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .todos-header h3 {
+            font-size: 1.1em;
+            color: #667eea;
+        }
+        
+        .add-todo-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            cursor: pointer;
+        }
+        
+        .add-todo-btn:hover {
+            background: #764ba2;
+        }
+        
+        .todo-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .todo-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .todo-item:hover {
+            background: #e9ecef;
+        }
+        
+        .todo-item.completed {
+            opacity: 0.6;
+        }
+        
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+        }
+        
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .todo-text {
+            flex: 1;
+            font-size: 0.95em;
+        }
+        
+        .todo-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            cursor: pointer;
+        }
+        
+        .todo-delete:hover {
+            background: #c82333;
+        }
+        
+        .add-todo-form {
+            display: none;
+            margin-top: 10px;
+            gap: 5px;
+        }
+        
+        .add-todo-form.show {
+            display: flex;
+        }
+        
+        .add-todo-form input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .add-todo-form button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .add-todo-form button:hover {
+            background: #218838;
+        }
+        
+        .add-todo-form .cancel-btn {
+            background: #6c757d;
+        }
+        
+        .add-todo-form .cancel-btn:hover {
+            background: #5a6268;
         }
         
         .project-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            flex-wrap: wrap;
         }
         
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 0.9em;
-            border-radius: 6px;
+        .btn {
+            padding: 8px 15px;
             border: none;
+            border-radius: 5px;
+            font-size: 0.85em;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -306,154 +456,13 @@
             background: #c82333;
         }
         
-        .project-notes {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .project-notes h3 {
-            color: #856404;
-            font-size: 1em;
-            margin-bottom: 8px;
-        }
-        
-        .project-notes input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ffc107;
-            border-radius: 6px;
-            font-size: 0.95em;
-        }
-        
-        .notes-counter {
-            font-size: 0.8em;
-            color: #856404;
-            margin-top: 5px;
-            text-align: right;
-        }
-        
-        .project-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .detail-item {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 8px;
-        }
-        
-        .detail-label {
-            font-size: 0.85em;
-            color: #666;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .detail-value {
-            font-size: 1.1em;
-            font-weight: 600;
+        .btn-status {
+            background: #ffc107;
             color: #333;
         }
         
-        .todos-section {
-            margin-top: 20px;
-        }
-        
-        .todos-section h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-        
-        .todo-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            transition: all 0.2s;
-        }
-        
-        .todo-item:hover {
-            background: #e9ecef;
-        }
-        
-        .todo-item.completed {
-            opacity: 0.6;
-        }
-        
-        .todo-item.completed .todo-text {
-            text-decoration: line-through;
-        }
-        
-        .todo-checkbox {
-            width: 20px;
-            height: 20px;
-            margin-right: 12px;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        
-        .todo-text {
-            flex: 1;
-            color: #333;
-            line-height: 1.5;
-        }
-        
-        .todo-delete {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 4px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85em;
-            margin-left: 10px;
-        }
-        
-        .todo-delete:hover {
-            background: #c82333;
-        }
-        
-        .add-todo {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .add-todo input {
-            flex: 1;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 1em;
-        }
-        
-        .add-todo input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .add-todo button {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        
-        .add-todo button:hover {
-            background: #218838;
+        .btn-status:hover {
+            background: #e0a800;
         }
         
         .modal {
@@ -478,11 +487,9 @@
             background-color: white;
             margin: 20px;
             padding: 30px;
-            border-radius: 15px;
+            border-radius: 10px;
             max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
+            width: 90%;
         }
         
         .modal-header {
@@ -511,55 +518,71 @@
         .form-group label {
             display: block;
             margin-bottom: 5px;
-            color: #555;
-            font-weight: 500;
+            font-weight: 600;
+            color: #333;
         }
         
         .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .form-group select {
             width: 100%;
             padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             font-size: 1em;
-            font-family: inherit;
         }
         
         .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
+        .form-group select:focus {
             outline: none;
             border-color: #667eea;
         }
         
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-save {
+            flex: 1;
+            background: #28a745;
+            color: white;
+            padding: 12px;
+        }
+        
+        .btn-save:hover {
+            background: #218838;
+        }
+        
+        .btn-cancel {
+            flex: 1;
+            background: #6c757d;
+            color: white;
+            padding: 12px;
+        }
+        
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+        
         @media (max-width: 768px) {
             .header h1 {
-                font-size: 2em;
+                font-size: 1.5em;
+            }
+            
+            .logout-btn {
+                position: static;
+                margin-top: 10px;
+                display: block;
+                width: 100%;
             }
             
             .project-header {
                 flex-direction: column;
             }
             
-            .project-title {
-                margin-left: 0;
-                margin-top: 50px;
-            }
-            
-            .project-actions {
-                margin-top: 15px;
-            }
-            
-            .logout-btn {
-                position: static;
-                margin-top: 20px;
-                width: 100%;
-            }
-            
-            .priority-badge {
-                left: 15px;
-                top: 15px;
+            .drag-handle {
+                display: none;
             }
         }
     </style>
@@ -581,63 +604,84 @@
         <div class="header">
             <button class="logout-btn" onclick="logout()">🔓 Logout</button>
             <h1>🎯 Project Tracker</h1>
+            <p style="color: #666; margin-top: 5px;">Quick Start 9 / Follow Thru 2 Optimized</p>
             <div class="sync-status" id="syncStatus">🔄 Connecting...</div>
-            <div class="kolbe-note">
-                <strong>⚡ Quick Start 9 Mode:</strong>
-                Drag projects to reorder by priority. Jump between projects as energy shifts. Focus on next action, not planning.
-            </div>
         </div>
-        
-        <div class="controls">
-            <button class="btn" onclick="openAddProjectModal()">+ Add New Project</button>
+
+        <div class="add-project-section">
+            <button class="add-project-btn" onclick="openAddProjectModal()">+ Add New Project</button>
         </div>
-        
-        <div class="drag-hint">
-            ↕️ Drag projects up/down to change priority order
-        </div>
-        
-        <div id="projectsList"></div>
+
+        <div class="projects-container" id="projectsContainer"></div>
     </div>
 
-    <!-- Add/Edit Project Modal -->
+    <!-- Project Modal -->
     <div id="projectModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeProjectModal()">&times;</span>
             <div class="modal-header" id="modalTitle">Add New Project</div>
-            <div class="form-group">
-                <label>Project Name*</label>
-                <input type="text" id="projectName" placeholder="e.g., Tricks of the Trade">
-            </div>
-            <div class="form-group">
-                <label>Status*</label>
-                <select id="projectStatus">
-                    <option value="early">🌱 Early Draft</option>
-                    <option value="active">📝 Active Development</option>
-                    <option value="complete">✅ Complete Draft</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Word Count</label>
-                <input type="number" id="projectWordCount" placeholder="0">
-            </div>
-            <div class="form-group">
-                <label>Target Completion Date</label>
-                <input type="date" id="projectTarget">
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea id="projectDescription" rows="3" placeholder="Brief project description..."></textarea>
-            </div>
-            <div style="margin-top: 20px; display: flex; gap: 10px;">
-                <button class="btn" onclick="saveProject()">Save Project</button>
-                <button class="btn" style="background: #6c757d;" onclick="closeProjectModal()">Cancel</button>
-            </div>
+            <form id="projectForm" onsubmit="saveProject(event)">
+                <div class="form-group">
+                    <label>Project Title *</label>
+                    <input type="text" id="projectTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="projectStatus">
+                        <option value="active">Active</option>
+                        <option value="paused">Paused</option>
+                        <option value="complete">Complete</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-save">Save Project</button>
+                    <button type="button" class="btn btn-cancel" onclick="closeProjectModal()">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script type="module">
+        const CORRECT_PASSWORD = "Raineer";
+
+        if (sessionStorage.getItem('projectTrackerAuth') === 'true') {
+            showMainApp();
+        }
+
+        window.checkPassword = function() {
+            const input = document.getElementById('passwordInput');
+            const errorMsg = document.getElementById('errorMessage');
+
+            if (input.value === CORRECT_PASSWORD) {
+                sessionStorage.setItem('projectTrackerAuth', 'true');
+                showMainApp();
+            } else {
+                errorMsg.classList.add('show');
+                input.value = '';
+                input.focus();
+            }
+        };
+
+        window.logout = function() {
+            sessionStorage.removeItem('projectTrackerAuth');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainContainer').classList.remove('show');
+            document.getElementById('passwordInput').value = '';
+        };
+
+        function showMainApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainContainer').classList.add('show');
+        }
+
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, set, onValue, remove, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getDatabase, ref, set, onValue, remove, update, push } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyBIsG9oUnflAo0lsGCnco_jkGtEVtO4gkU",
@@ -655,56 +699,11 @@
 
         let projects = [];
         let editingProjectId = null;
-        let draggedElement = null;
 
-        // Password protection
-        const CORRECT_PASSWORD = "Raineer";
-        
-        if (sessionStorage.getItem('projectTrackerAuth') === 'true') {
-            showMainApp();
-        }
-        
-        window.checkPassword = function() {
-            const input = document.getElementById('passwordInput');
-            const errorMsg = document.getElementById('errorMessage');
-            
-            if (input.value === CORRECT_PASSWORD) {
-                sessionStorage.setItem('projectTrackerAuth', 'true');
-                showMainApp();
-            } else {
-                errorMsg.classList.add('show');
-                input.value = '';
-                input.focus();
-            }
-        };
-        
-        window.logout = function() {
-            sessionStorage.removeItem('projectTrackerAuth');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('mainContainer').classList.remove('show');
-            document.getElementById('passwordInput').value = '';
-        };
-        
-        function showMainApp() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('mainContainer').classList.add('show');
-        }
-        
-        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkPassword();
-            }
-        });
-
-        // Load projects
         onValue(projectsRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                projects = Object.entries(data).map(([id, project]) => ({ 
-                    id, 
-                    ...project,
-                    priority: project.priority || 999
-                }));
+                projects = Object.entries(data).map(([id, project]) => ({ id, ...project }));
             } else {
                 initializeDefaultProjects();
             }
@@ -715,59 +714,45 @@
         function initializeDefaultProjects() {
             const defaultProjects = [
                 {
-                    name: "Tricks of the Trade - Car Buying Guide",
-                    status: "complete",
-                    wordCount: 68000,
-                    targetDate: "2025-11-01",
-                    description: "Complete car buying insider guide ready for publishing",
+                    title: 'Tricks of the Trade - Car Buying Guide',
+                    status: 'active',
                     priority: 1,
-                    notes: "Ready for final review",
+                    notes: 'Ready for self-publishing final review',
                     todos: [
-                        { text: "Final read-through for consistency", completed: false },
-                        { text: "Create book description/marketing copy", completed: false },
-                        { text: "Choose publishing platform (KDP vs IngramSpark)", completed: false }
+                        { text: 'Final read-through for consistency', completed: false },
+                        { text: 'Create book description/marketing copy', completed: false },
+                        { text: 'Choose publishing platform', completed: false }
                     ]
                 },
                 {
-                    name: "Conflict to Connection",
-                    status: "active",
-                    wordCount: 52000,
-                    targetDate: "2025-12-15",
-                    description: "Communication guide - 9 of 12 chapters complete",
+                    title: 'Conflict to Connection',
+                    status: 'active',
                     priority: 2,
-                    notes: "Need chapters 10-12",
+                    notes: 'Chapters 1-9 complete need citations',
                     todos: [
-                        { text: "Write Chapter 10: Reading the Unspoken", completed: false },
-                        { text: "Add citations to chapters 4 & 6", completed: false },
-                        { text: "Review chapters 1-9 for consistency", completed: false }
+                        { text: 'Write Chapter 10: Reading the Unspoken', completed: false },
+                        { text: 'Add citations to chapters 4 & 6', completed: false },
+                        { text: 'Review chapters 1-9 for consistency', completed: false }
                     ]
                 },
                 {
-                    name: "Ketu's Father",
-                    status: "early",
-                    wordCount: 15000,
-                    targetDate: "2026-03-01",
-                    description: "Fiction project - early draft stage",
+                    title: "Ketu's Father (Fiction)",
+                    status: 'active',
                     priority: 3,
-                    notes: "Character development phase",
+                    notes: 'Early draft stage outline development',
                     todos: [
-                        { text: "Outline remaining chapters", completed: false },
-                        { text: "Develop main character arc", completed: false },
-                        { text: "Research historical setting", completed: false }
+                        { text: 'Complete character profiles', completed: false },
+                        { text: 'Outline major plot points', completed: false }
                     ]
                 },
                 {
-                    name: "Middle Mesa",
-                    status: "early",
-                    wordCount: 8000,
-                    targetDate: "2026-06-01",
-                    description: "Fiction project - early draft stage",
+                    title: 'Middle Mesa (Fiction)',
+                    status: 'active',
                     priority: 4,
-                    notes: "Exploring initial ideas",
+                    notes: 'Early draft stage brainstorming phase',
                     todos: [
-                        { text: "Complete character profiles", completed: false },
-                        { text: "Draft opening three chapters", completed: false },
-                        { text: "Establish setting and tone", completed: false }
+                        { text: 'World building notes', completed: false },
+                        { text: 'Character backstories', completed: false }
                     ]
                 }
             ];
@@ -786,25 +771,8 @@
         window.openAddProjectModal = function() {
             editingProjectId = null;
             document.getElementById('modalTitle').textContent = 'Add New Project';
-            document.getElementById('projectName').value = '';
-            document.getElementById('projectStatus').value = 'early';
-            document.getElementById('projectWordCount').value = '';
-            document.getElementById('projectTarget').value = '';
-            document.getElementById('projectDescription').value = '';
-            document.getElementById('projectModal').classList.add('show');
-        };
-
-        window.openEditProjectModal = function(projectId) {
-            const project = projects.find(p => p.id === projectId);
-            if (!project) return;
-
-            editingProjectId = projectId;
-            document.getElementById('modalTitle').textContent = 'Edit Project';
-            document.getElementById('projectName').value = project.name || '';
-            document.getElementById('projectStatus').value = project.status || 'early';
-            document.getElementById('projectWordCount').value = project.wordCount || '';
-            document.getElementById('projectTarget').value = project.targetDate || '';
-            document.getElementById('projectDescription').value = project.description || '';
+            document.getElementById('projectTitle').value = '';
+            document.getElementById('projectStatus').value = 'active';
             document.getElementById('projectModal').classList.add('show');
         };
 
@@ -813,47 +781,50 @@
             editingProjectId = null;
         };
 
-        window.saveProject = function() {
-            const name = document.getElementById('projectName').value.trim();
+        window.saveProject = function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('projectTitle').value.trim();
             const status = document.getElementById('projectStatus').value;
-            const wordCount = parseInt(document.getElementById('projectWordCount').value) || 0;
-            const targetDate = document.getElementById('projectTarget').value;
-            const description = document.getElementById('projectDescription').value.trim();
 
-            if (!name) {
-                alert('Please enter a project name');
+            if (!title) {
+                alert('Please enter a project title');
                 return;
             }
-
-            const projectData = {
-                name,
-                status,
-                wordCount,
-                targetDate,
-                description,
-                todos: [],
-                notes: '',
-                priority: editingProjectId ? undefined : projects.length + 1
-            };
 
             updateSyncStatus(false);
 
             if (editingProjectId) {
-                const existingProject = projects.find(p => p.id === editingProjectId);
-                if (existingProject) {
-                    projectData.todos = existingProject.todos || [];
-                    projectData.notes = existingProject.notes || '';
-                    projectData.priority = existingProject.priority;
-                }
-                update(ref(database, `projects/${editingProjectId}`), projectData).then(() => {
+                update(ref(database, `projects/${editingProjectId}`), {
+                    title,
+                    status
+                }).then(() => {
                     closeProjectModal();
                 });
             } else {
+                const newPriority = projects.length + 1;
                 const projectId = `project_${Date.now()}`;
-                set(ref(database, `projects/${projectId}`), projectData).then(() => {
+                set(ref(database, `projects/${projectId}`), {
+                    title,
+                    status,
+                    priority: newPriority,
+                    notes: '',
+                    todos: []
+                }).then(() => {
                     closeProjectModal();
                 });
             }
+        };
+
+        window.openEditProjectModal = function(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            if (!project) return;
+
+            editingProjectId = projectId;
+            document.getElementById('modalTitle').textContent = 'Edit Project';
+            document.getElementById('projectTitle').value = project.title;
+            document.getElementById('projectStatus').value = project.status;
+            document.getElementById('projectModal').classList.add('show');
         };
 
         window.deleteProject = function(projectId) {
@@ -863,20 +834,59 @@
             }
         };
 
-        window.updateProjectNotes = function(projectId, notes) {
-            const words = notes.trim().split(/\s+/).filter(w => w.length > 0);
-            if (words.length > 10) {
-                const limited = words.slice(0, 10).join(' ');
-                document.getElementById(`notes_${projectId}`).value = limited;
-                return;
-            }
+        window.toggleStatus = function(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            if (!project) return;
+
+            const statusOrder = ['active', 'paused', 'complete'];
+            const currentIndex = statusOrder.indexOf(project.status);
+            const nextIndex = (currentIndex + 1) % statusOrder.length;
+            const newStatus = statusOrder[nextIndex];
 
             updateSyncStatus(false);
-            update(ref(database, `projects/${projectId}`), { notes });
+            update(ref(database, `projects/${projectId}`), {
+                status: newStatus
+            });
+        };
+
+        window.updateNotes = function(projectId, textarea) {
+            clearTimeout(window.notesTimeout);
+            
+            const words = textarea.value.trim().split(/\s+/).filter(w => w.length > 0);
+            const wordCount = textarea.value.trim().length === 0 ? 0 : words.length;
+            
+            const counter = textarea.parentElement.querySelector('.word-counter');
+            counter.textContent = `${wordCount} / 10 words`;
+            counter.classList.toggle('over-limit', wordCount > 10);
+            
+            if (wordCount > 10) {
+                const limited = words.slice(0, 10).join(' ');
+                textarea.value = limited;
+                return;
+            }
+            
+            window.notesTimeout = setTimeout(() => {
+                updateSyncStatus(false);
+                update(ref(database, `projects/${projectId}`), {
+                    notes: textarea.value.trim()
+                });
+            }, 1000);
+        };
+
+        window.showAddTodoForm = function(projectId) {
+            const form = document.getElementById(`add-todo-form-${projectId}`);
+            form.classList.add('show');
+            form.querySelector('input').focus();
+        };
+
+        window.hideAddTodoForm = function(projectId) {
+            const form = document.getElementById(`add-todo-form-${projectId}`);
+            form.classList.remove('show');
+            form.querySelector('input').value = '';
         };
 
         window.addTodo = function(projectId) {
-            const input = document.getElementById(`todoInput_${projectId}`);
+            const input = document.getElementById(`new-todo-${projectId}`);
             const text = input.value.trim();
             
             if (!text) return;
@@ -888,66 +898,70 @@
             todos.push({ text, completed: false });
 
             updateSyncStatus(false);
-            update(ref(database, `projects/${projectId}`), { todos }).then(() => {
-                input.value = '';
+            update(ref(database, `projects/${projectId}`), {
+                todos
+            }).then(() => {
+                hideAddTodoForm(projectId);
             });
         };
 
         window.toggleTodo = function(projectId, todoIndex) {
             const project = projects.find(p => p.id === projectId);
-            if (!project || !project.todos) return;
+            if (!project) return;
 
-            project.todos[todoIndex].completed = !project.todos[todoIndex].completed;
+            const todos = project.todos || [];
+            if (todoIndex >= todos.length) return;
+
+            todos[todoIndex].completed = !todos[todoIndex].completed;
 
             updateSyncStatus(false);
-            update(ref(database, `projects/${projectId}`), { todos: project.todos });
+            update(ref(database, `projects/${projectId}`), {
+                todos
+            });
         };
 
         window.deleteTodo = function(projectId, todoIndex) {
             const project = projects.find(p => p.id === projectId);
-            if (!project || !project.todos) return;
+            if (!project) return;
 
-            project.todos.splice(todoIndex, 1);
+            const todos = project.todos || [];
+            todos.splice(todoIndex, 1);
 
             updateSyncStatus(false);
-            update(ref(database, `projects/${projectId}`), { todos: project.todos });
+            update(ref(database, `projects/${projectId}`), {
+                todos
+            });
         };
 
-        function getStatusBadge(status) {
-            const badges = {
-                'early': '<span class="project-status status-early">🌱 Early Draft</span>',
-                'active': '<span class="project-status status-active">📝 Active Development</span>',
-                'complete': '<span class="project-status status-complete">✅ Complete Draft</span>'
-            };
-            return badges[status] || badges['early'];
-        }
+        let draggedElement = null;
 
-        // Drag and drop functionality
-        function handleDragStart(e) {
+        window.handleDragStart = function(e) {
             draggedElement = e.currentTarget;
             e.currentTarget.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
-        }
+        };
 
-        function handleDragOver(e) {
+        window.handleDragOver = function(e) {
             if (e.preventDefault) {
                 e.preventDefault();
             }
             e.dataTransfer.dropEffect = 'move';
             
             const afterElement = getDragAfterElement(e.currentTarget.parentElement, e.clientY);
+            const draggable = document.querySelector('.dragging');
+            
             if (afterElement == null) {
-                e.currentTarget.parentElement.appendChild(draggedElement);
+                e.currentTarget.parentElement.appendChild(draggable);
             } else {
-                e.currentTarget.parentElement.insertBefore(draggedElement, afterElement);
+                e.currentTarget.parentElement.insertBefore(draggable, afterElement);
             }
+            
             return false;
-        }
+        };
 
-        function handleDragEnd(e) {
+        window.handleDragEnd = function(e) {
             e.currentTarget.classList.remove('dragging');
             
-            // Update priorities based on new order
             const projectElements = document.querySelectorAll('.project-card');
             const updates = {};
             
@@ -956,12 +970,11 @@
                 updates[projectId] = index + 1;
             });
             
-            // Update Firebase with new priorities
             updateSyncStatus(false);
             Object.entries(updates).forEach(([projectId, priority]) => {
                 update(ref(database, `projects/${projectId}`), { priority });
             });
-        }
+        };
 
         function getDragAfterElement(container, y) {
             const draggableElements = [...container.querySelectorAll('.project-card:not(.dragging)')];
@@ -979,10 +992,10 @@
         }
 
         function renderProjects() {
-            const container = document.getElementById('projectsList');
+            const container = document.getElementById('projectsContainer');
             
             if (projects.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: white; padding: 40px; font-size: 1.2em;">No projects yet. Add your first project above!</p>';
+                container.innerHTML = '<p style="text-align: center; color: white; padding: 40px; font-size: 1.2em; background: rgba(255,255,255,0.1); border-radius: 10px;">No projects yet. Click "Add New Project" above to get started!</p>';
                 return;
             }
 
@@ -991,7 +1004,6 @@
             const html = sortedProjects.map(project => {
                 const todos = project.todos || [];
                 const completedCount = todos.filter(t => t.completed).length;
-                const progressPercent = todos.length > 0 ? (completedCount / todos.length * 100).toFixed(0) : 0;
                 const wordCount = project.notes ? project.notes.trim().split(/\s+/).filter(w => w.length > 0).length : 0;
 
                 return `
@@ -1001,71 +1013,54 @@
                          ondragstart="handleDragStart(event)"
                          ondragover="handleDragOver(event)"
                          ondragend="handleDragEnd(event)">
-                        <div class="priority-badge">#${project.priority || '?'}</div>
                         <div class="project-header">
-                            <div class="project-title">
-                                <h2>${project.name}</h2>
-                                ${getStatusBadge(project.status)}
+                            <div class="project-title-section">
+                                <div class="project-priority">Priority #${project.priority || '?'}</div>
+                                <div class="project-title">${project.title}</div>
+                                <span class="project-status status-${project.status}">${project.status}</span>
                             </div>
-                            <div class="project-actions">
-                                <button class="btn-small btn-edit" onclick="openEditProjectModal('${project.id}')">Edit</button>
-                                <button class="btn-small btn-delete" onclick="deleteProject('${project.id}')">Delete</button>
-                            </div>
+                            <div class="drag-handle" title="Drag to reorder">⋮⋮</div>
                         </div>
-                        
+
                         <div class="project-notes">
-                            <h3>📝 Session Notes (Max 10 words)</h3>
-                            <input 
-                                type="text" 
-                                id="notes_${project.id}"
-                                value="${project.notes || ''}"
-                                placeholder="Quick notes about this project..."
-                                oninput="updateProjectNotes('${project.id}', this.value)"
-                            >
-                            <div class="notes-counter">${wordCount} / 10 words</div>
+                            <label>📝 Session Notes (Max 10 words)</label>
+                            <textarea 
+                                oninput="updateNotes('${project.id}', this)"
+                                placeholder="Quick notes about current session...">${project.notes || ''}</textarea>
+                            <div class="word-counter ${wordCount > 10 ? 'over-limit' : ''}">${wordCount} / 10 words</div>
                         </div>
-                        
-                        <div class="project-details">
-                            <div class="detail-item">
-                                <div class="detail-label">Word Count</div>
-                                <div class="detail-value">${project.wordCount.toLocaleString()} words</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Target Date</div>
-                                <div class="detail-value">${project.targetDate ? new Date(project.targetDate).toLocaleDateString() : 'Not set'}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Progress</div>
-                                <div class="detail-value">${completedCount} / ${todos.length} tasks (${progressPercent}%)</div>
-                            </div>
-                        </div>
-                        
-                        ${project.description ? `<p style="color: #666; margin: 15px 0; line-height: 1.6;">${project.description}</p>` : ''}
-                        
+
                         <div class="todos-section">
-                            <h3>📋 To-Do List</h3>
-                            ${todos.map((todo, index) => `
-                                <div class="todo-item ${todo.completed ? 'completed' : ''}">
-                                    <input 
-                                        type="checkbox" 
-                                        class="todo-checkbox" 
-                                        ${todo.completed ? 'checked' : ''}
-                                        onchange="toggleTodo('${project.id}', ${index})"
-                                    >
-                                    <div class="todo-text">${todo.text}</div>
-                                    <button class="todo-delete" onclick="deleteTodo('${project.id}', ${index})">Delete</button>
-                                </div>
-                            `).join('')}
-                            
-                            <div class="add-todo">
-                                <input 
-                                    type="text" 
-                                    id="todoInput_${project.id}" 
-                                    placeholder="Add new task..."
-                                    onkeypress="if(event.key === 'Enter') addTodo('${project.id}')"
-                                >
-                                <button onclick="addTodo('${project.id}')">+ Add</button>
+                            <div class="todos-header">
+                                <h3>✓ To-Do Items (${completedCount}/${todos.length})</h3>
+                                <button class="add-todo-btn" onclick="showAddTodoForm('${project.id}')">+ Add</button>
                             </div>
+                            <div class="todo-list">
+                                ${todos.map((todo, index) => `
+                                    <div class="todo-item ${todo.completed ? 'completed' : ''}">
+                                        <input type="checkbox" 
+                                               class="todo-checkbox" 
+                                               ${todo.completed ? 'checked' : ''}
+                                               onchange="toggleTodo('${project.id}', ${index})">
+                                        <span class="todo-text">${todo.text}</span>
+                                        <button class="todo-delete" onclick="deleteTodo('${project.id}', ${index})">Delete</button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="add-todo-form" id="add-todo-form-${project.id}">
+                                <input type="text" 
+                                       id="new-todo-${project.id}"
+                                       placeholder="Enter new task..."
+                                       onkeypress="if(event.key==='Enter') addTodo('${project.id}')">
+                                <button onclick="addTodo('${project.id}')">Add</button>
+                                <button class="cancel-btn" onclick="hideAddTodoForm('${project.id}')">Cancel</button>
+                            </div>
+                        </div>
+
+                        <div class="project-actions">
+                            <button class="btn btn-edit" onclick="openEditProjectModal('${project.id}')">Edit Title</button>
+                            <button class="btn btn-status" onclick="toggleStatus('${project.id}')">Change Status</button>
+                            <button class="btn btn-delete" onclick="deleteProject('${project.id}')">Delete Project</button>
                         </div>
                     </div>
                 `;
@@ -1073,11 +1068,6 @@
 
             container.innerHTML = html;
         }
-
-        // Make drag functions available globally
-        window.handleDragStart = handleDragStart;
-        window.handleDragOver = handleDragOver;
-        window.handleDragEnd = handleDragEnd;
     </script>
 </body>
 </html>
