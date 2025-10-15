@@ -145,6 +145,59 @@
             background: #764ba2;
         }
 
+        .quick-reference {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .quick-reference h2 {
+            font-size: 1.3em;
+            color: #667eea;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-reference h2:hover {
+            color: #764ba2;
+        }
+
+        .reference-content {
+            margin-top: 15px;
+        }
+
+        .reference-content.hidden {
+            display: none;
+        }
+
+        .reference-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .reference-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .reference-item code {
+            background: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #333;
+        }
+
         .quick-update-box {
             background: white;
             border-radius: 15px;
@@ -638,6 +691,28 @@
             <div class="sync-status" id="syncStatus">🔄 Connecting...</div>
         </div>
 
+        <!-- Quick Reference -->
+        <div class="quick-reference">
+            <h2 onclick="toggleReference()">📖 Quick Reference <span id="referenceToggle">▼</span></h2>
+            <div class="reference-content" id="referenceContent">
+                <div class="reference-item">
+                    <strong>Three Phrases to Use:</strong>
+                    • "Log session" - When you finish working<br>
+                    • "Update tracker" - Check current status<br>
+                    • "Where am I?" - See what to do next
+                </div>
+                <div class="reference-item">
+                    <strong>Update Format:</strong>
+                    <code>ProjectName | status | notes</code><br>
+                    Example: <code>Conflict to Connection | active | Chapter 10 done</code>
+                </div>
+                <div class="reference-item">
+                    <strong>Valid Statuses:</strong>
+                    active, waiting, early, complete
+                </div>
+            </div>
+        </div>
+
         <!-- Quick Update Box -->
         <div class="quick-update-box">
             <h2>⚡ Quick Update</h2>
@@ -749,6 +824,20 @@
                 checkPassword();
             }
         });
+
+        // Quick Reference Toggle
+        window.toggleReference = function() {
+            const content = document.getElementById('referenceContent');
+            const toggle = document.getElementById('referenceToggle');
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                toggle.textContent = '▼';
+            } else {
+                content.classList.add('hidden');
+                toggle.textContent = '▶';
+            }
+        };
 
         // Quick Update Function
         window.processQuickUpdate = function() {
