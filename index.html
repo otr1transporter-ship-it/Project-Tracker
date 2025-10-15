@@ -145,10 +145,6 @@
             background: #764ba2;
         }
         
-        .add-project-section {
-            margin-bottom: 20px;
-        }
-        
         .add-project-btn {
             width: 100%;
             background: #28a745;
@@ -159,6 +155,7 @@
             font-size: 1.1em;
             font-weight: bold;
             cursor: pointer;
+            margin-bottom: 20px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             transition: all 0.2s;
         }
@@ -211,7 +208,7 @@
             flex: 1;
         }
         
-        .project-priority {
+        .priority-badge {
             font-size: 0.75em;
             color: white;
             background: #667eea;
@@ -241,7 +238,7 @@
         }
         
         .status-active { background: #d4edda; color: #155724; }
-        .status-paused { background: #fff3cd; color: #856404; }
+        .status-early { background: #fff3cd; color: #856404; }
         .status-complete { background: #cce5ff; color: #004085; }
         
         .drag-handle {
@@ -303,36 +300,10 @@
             margin-bottom: 15px;
         }
         
-        .todos-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .todos-header h3 {
+        .todos-section h3 {
             font-size: 1.1em;
             color: #667eea;
-        }
-        
-        .add-todo-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 5px;
-            font-size: 0.85em;
-            cursor: pointer;
-        }
-        
-        .add-todo-btn:hover {
-            background: #764ba2;
-        }
-        
-        .todo-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            margin-bottom: 10px;
         }
         
         .todo-item {
@@ -342,6 +313,7 @@
             padding: 10px;
             background: #f8f9fa;
             border-radius: 6px;
+            margin-bottom: 8px;
             transition: all 0.2s;
         }
         
@@ -382,24 +354,20 @@
             background: #c82333;
         }
         
-        .add-todo-form {
-            display: none;
-            margin-top: 10px;
-            gap: 5px;
-        }
-        
-        .add-todo-form.show {
+        .add-todo {
             display: flex;
+            gap: 5px;
+            margin-top: 10px;
         }
         
-        .add-todo-form input {
+        .add-todo input {
             flex: 1;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 5px;
         }
         
-        .add-todo-form button {
+        .add-todo button {
             background: #28a745;
             color: white;
             border: none;
@@ -408,16 +376,8 @@
             cursor: pointer;
         }
         
-        .add-todo-form button:hover {
+        .add-todo button:hover {
             background: #218838;
-        }
-        
-        .add-todo-form .cancel-btn {
-            background: #6c757d;
-        }
-        
-        .add-todo-form .cancel-btn:hover {
-            background: #5a6268;
         }
         
         .project-actions {
@@ -438,15 +398,6 @@
             transition: all 0.2s;
         }
         
-        .btn-edit {
-            background: #17a2b8;
-            color: white;
-        }
-        
-        .btn-edit:hover {
-            background: #138496;
-        }
-        
         .btn-delete {
             background: #dc3545;
             color: white;
@@ -454,15 +405,6 @@
         
         .btn-delete:hover {
             background: #c82333;
-        }
-        
-        .btn-status {
-            background: #ffc107;
-            color: #333;
-        }
-        
-        .btn-status:hover {
-            background: #e0a800;
         }
         
         .modal {
@@ -608,80 +550,44 @@
             <div class="sync-status" id="syncStatus">🔄 Connecting...</div>
         </div>
 
-        <div class="add-project-section">
-            <button class="add-project-btn" onclick="openAddProjectModal()">+ Add New Project</button>
-        </div>
+        <button class="add-project-btn" onclick="openAddModal()">+ Add New Project</button>
 
-        <div class="projects-container" id="projectsContainer"></div>
+        <div class="projects-container" id="projectsList"></div>
     </div>
 
-    <!-- Project Modal -->
-    <div id="projectModal" class="modal">
+    <!-- Add Project Modal -->
+    <div id="addModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeProjectModal()">&times;</span>
-            <div class="modal-header" id="modalTitle">Add New Project</div>
-            <form id="projectForm" onsubmit="saveProject(event)">
+            <span class="close" onclick="closeAddModal()">&times;</span>
+            <div class="modal-header">Add New Project</div>
+            <form onsubmit="addProject(event)">
                 <div class="form-group">
-                    <label>Project Title *</label>
-                    <input type="text" id="projectTitle" required>
+                    <label>Project Name *</label>
+                    <input type="text" id="newProjectName" required>
                 </div>
                 <div class="form-group">
                     <label>Status</label>
-                    <select id="projectStatus">
-                        <option value="active">Active</option>
-                        <option value="paused">Paused</option>
-                        <option value="complete">Complete</option>
+                    <select id="newProjectStatus">
+                        <option value="early">🌱 Early Draft</option>
+                        <option value="active">📝 Active Development</option>
+                        <option value="complete">✅ Complete Draft</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="newProjectDesc" placeholder="Brief description...">
+                </div>
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-save">Save Project</button>
-                    <button type="button" class="btn btn-cancel" onclick="closeProjectModal()">Cancel</button>
+                    <button type="submit" class="btn btn-save">Add Project</button>
+                    <button type="button" class="btn btn-cancel" onclick="closeAddModal()">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script type="module">
-        const CORRECT_PASSWORD = "Raineer";
-
-        if (sessionStorage.getItem('projectTrackerAuth') === 'true') {
-            showMainApp();
-        }
-
-        window.checkPassword = function() {
-            const input = document.getElementById('passwordInput');
-            const errorMsg = document.getElementById('errorMessage');
-
-            if (input.value === CORRECT_PASSWORD) {
-                sessionStorage.setItem('projectTrackerAuth', 'true');
-                showMainApp();
-            } else {
-                errorMsg.classList.add('show');
-                input.value = '';
-                input.focus();
-            }
-        };
-
-        window.logout = function() {
-            sessionStorage.removeItem('projectTrackerAuth');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('mainContainer').classList.remove('show');
-            document.getElementById('passwordInput').value = '';
-        };
-
-        function showMainApp() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('mainContainer').classList.add('show');
-        }
-
-        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkPassword();
-            }
-        });
-
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, set, onValue, remove, update, push } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getDatabase, ref, set, onValue, remove, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyBIsG9oUnflAo0lsGCnco_jkGtEVtO4gkU",
@@ -698,12 +604,56 @@
         const projectsRef = ref(database, 'projects');
 
         let projects = [];
-        let editingProjectId = null;
+        let draggedElement = null;
 
+        // Password protection
+        const CORRECT_PASSWORD = "Raineer";
+        
+        if (sessionStorage.getItem('projectTrackerAuth') === 'true') {
+            showMainApp();
+        }
+        
+        window.checkPassword = function() {
+            const input = document.getElementById('passwordInput');
+            const errorMsg = document.getElementById('errorMessage');
+            
+            if (input.value === CORRECT_PASSWORD) {
+                sessionStorage.setItem('projectTrackerAuth', 'true');
+                showMainApp();
+            } else {
+                errorMsg.classList.add('show');
+                input.value = '';
+                input.focus();
+            }
+        };
+        
+        window.logout = function() {
+            sessionStorage.removeItem('projectTrackerAuth');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainContainer').classList.remove('show');
+            document.getElementById('passwordInput').value = '';
+        };
+        
+        function showMainApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainContainer').classList.add('show');
+        }
+        
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        // Load projects
         onValue(projectsRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                projects = Object.entries(data).map(([id, project]) => ({ id, ...project }));
+                projects = Object.entries(data).map(([id, project]) => ({ 
+                    id, 
+                    ...project,
+                    priority: project.priority || 999
+                }));
             } else {
                 initializeDefaultProjects();
             }
@@ -714,45 +664,51 @@
         function initializeDefaultProjects() {
             const defaultProjects = [
                 {
-                    title: 'Tricks of the Trade - Car Buying Guide',
-                    status: 'active',
+                    name: "Tricks of the Trade - Car Buying Guide",
+                    status: "complete",
+                    description: "Complete car buying insider guide ready for publishing",
                     priority: 1,
-                    notes: 'Ready for self-publishing final review',
+                    notes: "Ready for final review",
                     todos: [
-                        { text: 'Final read-through for consistency', completed: false },
-                        { text: 'Create book description/marketing copy', completed: false },
-                        { text: 'Choose publishing platform', completed: false }
+                        { text: "Final read-through for consistency", completed: false },
+                        { text: "Create book description/marketing copy", completed: false },
+                        { text: "Choose publishing platform (KDP vs IngramSpark)", completed: false }
                     ]
                 },
                 {
-                    title: 'Conflict to Connection',
-                    status: 'active',
+                    name: "Conflict to Connection",
+                    status: "active",
+                    description: "Communication guide - 9 of 12 chapters complete",
                     priority: 2,
-                    notes: 'Chapters 1-9 complete need citations',
+                    notes: "Need chapters 10-12 citations",
                     todos: [
-                        { text: 'Write Chapter 10: Reading the Unspoken', completed: false },
-                        { text: 'Add citations to chapters 4 & 6', completed: false },
-                        { text: 'Review chapters 1-9 for consistency', completed: false }
+                        { text: "Write Chapter 10: Reading the Unspoken", completed: false },
+                        { text: "Add citations to chapters 4 & 6", completed: false },
+                        { text: "Review chapters 1-9 for consistency", completed: false }
                     ]
                 },
                 {
-                    title: "Ketu's Father (Fiction)",
-                    status: 'active',
+                    name: "Ketu's Father",
+                    status: "early",
+                    description: "Fiction project - early draft stage",
                     priority: 3,
-                    notes: 'Early draft stage outline development',
+                    notes: "Character development phase",
                     todos: [
-                        { text: 'Complete character profiles', completed: false },
-                        { text: 'Outline major plot points', completed: false }
+                        { text: "Outline remaining chapters", completed: false },
+                        { text: "Develop main character arc", completed: false },
+                        { text: "Research historical setting", completed: false }
                     ]
                 },
                 {
-                    title: 'Middle Mesa (Fiction)',
-                    status: 'active',
+                    name: "Middle Mesa",
+                    status: "early",
+                    description: "Fiction project - early draft stage",
                     priority: 4,
-                    notes: 'Early draft stage brainstorming phase',
+                    notes: "Brainstorming world building",
                     todos: [
-                        { text: 'World building notes', completed: false },
-                        { text: 'Character backstories', completed: false }
+                        { text: "Complete character profiles", completed: false },
+                        { text: "Draft opening three chapters", completed: false },
+                        { text: "Establish setting and tone", completed: false }
                     ]
                 }
             ];
@@ -768,63 +724,40 @@
             status.textContent = synced ? '✅ Synced Across All Devices' : '🔄 Syncing...';
         }
 
-        window.openAddProjectModal = function() {
-            editingProjectId = null;
-            document.getElementById('modalTitle').textContent = 'Add New Project';
-            document.getElementById('projectTitle').value = '';
-            document.getElementById('projectStatus').value = 'active';
-            document.getElementById('projectModal').classList.add('show');
+        window.openAddModal = function() {
+            document.getElementById('addModal').classList.add('show');
+            document.getElementById('newProjectName').focus();
         };
 
-        window.closeProjectModal = function() {
-            document.getElementById('projectModal').classList.remove('show');
-            editingProjectId = null;
+        window.closeAddModal = function() {
+            document.getElementById('addModal').classList.remove('show');
+            document.getElementById('newProjectName').value = '';
+            document.getElementById('newProjectDesc').value = '';
         };
 
-        window.saveProject = function(e) {
+        window.addProject = function(e) {
             e.preventDefault();
             
-            const title = document.getElementById('projectTitle').value.trim();
-            const status = document.getElementById('projectStatus').value;
+            const name = document.getElementById('newProjectName').value.trim();
+            const status = document.getElementById('newProjectStatus').value;
+            const description = document.getElementById('newProjectDesc').value.trim();
+            
+            if (!name) return;
 
-            if (!title) {
-                alert('Please enter a project title');
-                return;
-            }
-
+            const newPriority = projects.length + 1;
+            const projectId = `project_${Date.now()}`;
+            
             updateSyncStatus(false);
-
-            if (editingProjectId) {
-                update(ref(database, `projects/${editingProjectId}`), {
-                    title,
-                    status
-                }).then(() => {
-                    closeProjectModal();
-                });
-            } else {
-                const newPriority = projects.length + 1;
-                const projectId = `project_${Date.now()}`;
-                set(ref(database, `projects/${projectId}`), {
-                    title,
-                    status,
-                    priority: newPriority,
-                    notes: '',
-                    todos: []
-                }).then(() => {
-                    closeProjectModal();
-                });
-            }
-        };
-
-        window.openEditProjectModal = function(projectId) {
-            const project = projects.find(p => p.id === projectId);
-            if (!project) return;
-
-            editingProjectId = projectId;
-            document.getElementById('modalTitle').textContent = 'Edit Project';
-            document.getElementById('projectTitle').value = project.title;
-            document.getElementById('projectStatus').value = project.status;
-            document.getElementById('projectModal').classList.add('show');
+            set(ref(database, `projects/${projectId}`), {
+                name,
+                status,
+                description,
+                priority: newPriority,
+                notes: '',
+                todos: []
+            }).then(() => {
+                closeAddModal();
+            });
         };
 
         window.deleteProject = function(projectId) {
@@ -834,19 +767,42 @@
             }
         };
 
-        window.toggleStatus = function(projectId) {
+        window.addTodo = function(projectId) {
+            const input = document.getElementById(`todoInput_${projectId}`);
+            const text = input.value.trim();
+            
+            if (!text) return;
+
             const project = projects.find(p => p.id === projectId);
             if (!project) return;
 
-            const statusOrder = ['active', 'paused', 'complete'];
-            const currentIndex = statusOrder.indexOf(project.status);
-            const nextIndex = (currentIndex + 1) % statusOrder.length;
-            const newStatus = statusOrder[nextIndex];
+            const todos = project.todos || [];
+            todos.push({ text, completed: false });
 
             updateSyncStatus(false);
-            update(ref(database, `projects/${projectId}`), {
-                status: newStatus
+            update(ref(database, `projects/${projectId}`), { todos }).then(() => {
+                input.value = '';
             });
+        };
+
+        window.toggleTodo = function(projectId, todoIndex) {
+            const project = projects.find(p => p.id === projectId);
+            if (!project || !project.todos) return;
+
+            project.todos[todoIndex].completed = !project.todos[todoIndex].completed;
+
+            updateSyncStatus(false);
+            update(ref(database, `projects/${projectId}`), { todos: project.todos });
+        };
+
+        window.deleteTodo = function(projectId, todoIndex) {
+            const project = projects.find(p => p.id === projectId);
+            if (!project || !project.todos) return;
+
+            project.todos.splice(todoIndex, 1);
+
+            updateSyncStatus(false);
+            update(ref(database, `projects/${projectId}`), { todos: project.todos });
         };
 
         window.updateNotes = function(projectId, textarea) {
@@ -873,75 +829,13 @@
             }, 1000);
         };
 
-        window.showAddTodoForm = function(projectId) {
-            const form = document.getElementById(`add-todo-form-${projectId}`);
-            form.classList.add('show');
-            form.querySelector('input').focus();
-        };
-
-        window.hideAddTodoForm = function(projectId) {
-            const form = document.getElementById(`add-todo-form-${projectId}`);
-            form.classList.remove('show');
-            form.querySelector('input').value = '';
-        };
-
-        window.addTodo = function(projectId) {
-            const input = document.getElementById(`new-todo-${projectId}`);
-            const text = input.value.trim();
-            
-            if (!text) return;
-
-            const project = projects.find(p => p.id === projectId);
-            if (!project) return;
-
-            const todos = project.todos || [];
-            todos.push({ text, completed: false });
-
-            updateSyncStatus(false);
-            update(ref(database, `projects/${projectId}`), {
-                todos
-            }).then(() => {
-                hideAddTodoForm(projectId);
-            });
-        };
-
-        window.toggleTodo = function(projectId, todoIndex) {
-            const project = projects.find(p => p.id === projectId);
-            if (!project) return;
-
-            const todos = project.todos || [];
-            if (todoIndex >= todos.length) return;
-
-            todos[todoIndex].completed = !todos[todoIndex].completed;
-
-            updateSyncStatus(false);
-            update(ref(database, `projects/${projectId}`), {
-                todos
-            });
-        };
-
-        window.deleteTodo = function(projectId, todoIndex) {
-            const project = projects.find(p => p.id === projectId);
-            if (!project) return;
-
-            const todos = project.todos || [];
-            todos.splice(todoIndex, 1);
-
-            updateSyncStatus(false);
-            update(ref(database, `projects/${projectId}`), {
-                todos
-            });
-        };
-
-        let draggedElement = null;
-
-        window.handleDragStart = function(e) {
+        function handleDragStart(e) {
             draggedElement = e.currentTarget;
             e.currentTarget.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
-        };
+        }
 
-        window.handleDragOver = function(e) {
+        function handleDragOver(e) {
             if (e.preventDefault) {
                 e.preventDefault();
             }
@@ -957,9 +851,9 @@
             }
             
             return false;
-        };
+        }
 
-        window.handleDragEnd = function(e) {
+        function handleDragEnd(e) {
             e.currentTarget.classList.remove('dragging');
             
             const projectElements = document.querySelectorAll('.project-card');
@@ -974,7 +868,7 @@
             Object.entries(updates).forEach(([projectId, priority]) => {
                 update(ref(database, `projects/${projectId}`), { priority });
             });
-        };
+        }
 
         function getDragAfterElement(container, y) {
             const draggableElements = [...container.querySelectorAll('.project-card:not(.dragging)')];
@@ -991,8 +885,17 @@
             }, { offset: Number.NEGATIVE_INFINITY }).element;
         }
 
+        function getStatusBadge(status) {
+            const badges = {
+                'early': '<span class="project-status status-early">🌱 Early Draft</span>',
+                'active': '<span class="project-status status-active">📝 Active Development</span>',
+                'complete': '<span class="project-status status-complete">✅ Complete Draft</span>'
+            };
+            return badges[status] || badges['early'];
+        }
+
         function renderProjects() {
-            const container = document.getElementById('projectsContainer');
+            const container = document.getElementById('projectsList');
             
             if (projects.length === 0) {
                 container.innerHTML = '<p style="text-align: center; color: white; padding: 40px; font-size: 1.2em; background: rgba(255,255,255,0.1); border-radius: 10px;">No projects yet. Click "Add New Project" above to get started!</p>';
@@ -1015,9 +918,10 @@
                          ondragend="handleDragEnd(event)">
                         <div class="project-header">
                             <div class="project-title-section">
-                                <div class="project-priority">Priority #${project.priority || '?'}</div>
-                                <div class="project-title">${project.title}</div>
-                                <span class="project-status status-${project.status}">${project.status}</span>
+                                <div class="priority-badge">Priority #${project.priority || '?'}</div>
+                                <div class="project-title">${project.name}</div>
+                                ${getStatusBadge(project.status)}
+                                ${project.description ? `<p style="color: #666; margin-top: 10px;">${project.description}</p>` : ''}
                             </div>
                             <div class="drag-handle" title="Drag to reorder">⋮⋮</div>
                         </div>
@@ -1031,35 +935,30 @@
                         </div>
 
                         <div class="todos-section">
-                            <div class="todos-header">
-                                <h3>✓ To-Do Items (${completedCount}/${todos.length})</h3>
-                                <button class="add-todo-btn" onclick="showAddTodoForm('${project.id}')">+ Add</button>
-                            </div>
-                            <div class="todo-list">
-                                ${todos.map((todo, index) => `
-                                    <div class="todo-item ${todo.completed ? 'completed' : ''}">
-                                        <input type="checkbox" 
-                                               class="todo-checkbox" 
-                                               ${todo.completed ? 'checked' : ''}
-                                               onchange="toggleTodo('${project.id}', ${index})">
-                                        <span class="todo-text">${todo.text}</span>
-                                        <button class="todo-delete" onclick="deleteTodo('${project.id}', ${index})">Delete</button>
-                                    </div>
-                                `).join('')}
-                            </div>
-                            <div class="add-todo-form" id="add-todo-form-${project.id}">
-                                <input type="text" 
-                                       id="new-todo-${project.id}"
-                                       placeholder="Enter new task..."
-                                       onkeypress="if(event.key==='Enter') addTodo('${project.id}')">
-                                <button onclick="addTodo('${project.id}')">Add</button>
-                                <button class="cancel-btn" onclick="hideAddTodoForm('${project.id}')">Cancel</button>
+                            <h3>✓ To-Do Items (${completedCount}/${todos.length})</h3>
+                            ${todos.map((todo, index) => `
+                                <div class="todo-item ${todo.completed ? 'completed' : ''}">
+                                    <input type="checkbox" 
+                                           class="todo-checkbox" 
+                                           ${todo.completed ? 'checked' : ''}
+                                           onchange="toggleTodo('${project.id}', ${index})">
+                                    <span class="todo-text">${todo.text}</span>
+                                    <button class="todo-delete" onclick="deleteTodo('${project.id}', ${index})">Delete</button>
+                                </div>
+                            `).join('')}
+                            
+                            <div class="add-todo">
+                                <input 
+                                    type="text" 
+                                    id="todoInput_${project.id}" 
+                                    placeholder="Add new task..."
+                                    onkeypress="if(event.key === 'Enter') addTodo('${project.id}')"
+                                >
+                                <button onclick="addTodo('${project.id}')">+ Add</button>
                             </div>
                         </div>
 
                         <div class="project-actions">
-                            <button class="btn btn-edit" onclick="openEditProjectModal('${project.id}')">Edit Title</button>
-                            <button class="btn btn-status" onclick="toggleStatus('${project.id}')">Change Status</button>
                             <button class="btn btn-delete" onclick="deleteProject('${project.id}')">Delete Project</button>
                         </div>
                     </div>
@@ -1068,6 +967,10 @@
 
             container.innerHTML = html;
         }
+
+        window.handleDragStart = handleDragStart;
+        window.handleDragOver = handleDragOver;
+        window.handleDragEnd = handleDragEnd;
     </script>
 </body>
 </html>
