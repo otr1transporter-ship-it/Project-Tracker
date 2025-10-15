@@ -122,6 +122,21 @@
             margin-bottom: 10px;
         }
         
+        .kolbe-note {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: #0d47a1;
+        }
+        
+        .kolbe-note strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
         .sync-status {
             color: #666;
             font-size: 0.9em;
@@ -144,41 +159,11 @@
             background: #764ba2;
         }
         
-        .notes-section {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        
-        .notes-section h2 {
-            color: #856404;
-            margin-bottom: 10px;
-            font-size: 1.3em;
-        }
-        
-        .notes-input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ffc107;
-            border-radius: 8px;
-            font-size: 1em;
-            resize: vertical;
-            min-height: 80px;
-            font-family: inherit;
-        }
-        
-        .notes-counter {
-            font-size: 0.85em;
-            color: #856404;
-            margin-top: 5px;
-            text-align: right;
-        }
-        
         .controls {
             margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
         
         .btn {
@@ -196,18 +181,52 @@
             background: #764ba2;
         }
         
+        .drag-hint {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
         .project-card {
             background: white;
             border-radius: 15px;
             padding: 30px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            transition: all 0.2s;
+            cursor: move;
+            border-left: 6px solid #667eea;
         }
         
         .project-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 30px rgba(0,0,0,0.15);
+        }
+        
+        .project-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        
+        .project-card.drag-over {
+            border-top: 4px solid #28a745;
+        }
+        
+        .priority-badge {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
         }
         
         .project-header {
@@ -217,10 +236,12 @@
             margin-bottom: 20px;
             border-bottom: 3px solid #667eea;
             padding-bottom: 15px;
+            position: relative;
         }
         
         .project-title {
             flex: 1;
+            margin-left: 80px;
         }
         
         .project-title h2 {
@@ -285,9 +306,38 @@
             background: #c82333;
         }
         
+        .project-notes {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .project-notes h3 {
+            color: #856404;
+            font-size: 1em;
+            margin-bottom: 8px;
+        }
+        
+        .project-notes input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+        
+        .notes-counter {
+            font-size: 0.8em;
+            color: #856404;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
         .project-details {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
@@ -492,6 +542,11 @@
                 flex-direction: column;
             }
             
+            .project-title {
+                margin-left: 0;
+                margin-top: 50px;
+            }
+            
             .project-actions {
                 margin-top: 15px;
             }
@@ -500,6 +555,11 @@
                 position: static;
                 margin-top: 20px;
                 width: 100%;
+            }
+            
+            .priority-badge {
+                left: 15px;
+                top: 15px;
             }
         }
     </style>
@@ -522,16 +582,18 @@
             <button class="logout-btn" onclick="logout()">🔓 Logout</button>
             <h1>🎯 Project Tracker</h1>
             <div class="sync-status" id="syncStatus">🔄 Connecting...</div>
-        </div>
-        
-        <div class="notes-section">
-            <h2>📝 Session Notes (Max 20 words)</h2>
-            <textarea class="notes-input" id="notesInput" placeholder="Quick notes about today's session..."></textarea>
-            <div class="notes-counter" id="notesCounter">0 / 20 words</div>
+            <div class="kolbe-note">
+                <strong>⚡ Quick Start 9 Mode:</strong>
+                Drag projects to reorder by priority. Jump between projects as energy shifts. Focus on next action, not planning.
+            </div>
         </div>
         
         <div class="controls">
             <button class="btn" onclick="openAddProjectModal()">+ Add New Project</button>
+        </div>
+        
+        <div class="drag-hint">
+            ↕️ Drag projects up/down to change priority order
         </div>
         
         <div id="projectsList"></div>
@@ -590,10 +652,10 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
         const projectsRef = ref(database, 'projects');
-        const notesRef = ref(database, 'projectNotes');
 
         let projects = [];
         let editingProjectId = null;
+        let draggedElement = null;
 
         // Password protection
         const CORRECT_PASSWORD = "Raineer";
@@ -634,39 +696,15 @@
             }
         });
 
-        // Load notes
-        onValue(notesRef, (snapshot) => {
-            const notes = snapshot.val();
-            if (notes) {
-                document.getElementById('notesInput').value = notes;
-                updateNotesCounter();
-            }
-        });
-
-        // Notes word counter
-        document.getElementById('notesInput').addEventListener('input', function() {
-            updateNotesCounter();
-            const words = this.value.trim().split(/\s+/).filter(w => w.length > 0);
-            if (words.length > 20) {
-                const limited = words.slice(0, 20).join(' ');
-                this.value = limited;
-                updateNotesCounter();
-            }
-            set(notesRef, this.value);
-        });
-
-        function updateNotesCounter() {
-            const text = document.getElementById('notesInput').value.trim();
-            const words = text.split(/\s+/).filter(w => w.length > 0);
-            const count = text.length === 0 ? 0 : words.length;
-            document.getElementById('notesCounter').textContent = `${count} / 20 words`;
-        }
-
         // Load projects
         onValue(projectsRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                projects = Object.entries(data).map(([id, project]) => ({ id, ...project }));
+                projects = Object.entries(data).map(([id, project]) => ({ 
+                    id, 
+                    ...project,
+                    priority: project.priority || 999
+                }));
             } else {
                 initializeDefaultProjects();
             }
@@ -682,6 +720,8 @@
                     wordCount: 68000,
                     targetDate: "2025-11-01",
                     description: "Complete car buying insider guide ready for publishing",
+                    priority: 1,
+                    notes: "Ready for final review",
                     todos: [
                         { text: "Final read-through for consistency", completed: false },
                         { text: "Create book description/marketing copy", completed: false },
@@ -694,6 +734,8 @@
                     wordCount: 52000,
                     targetDate: "2025-12-15",
                     description: "Communication guide - 9 of 12 chapters complete",
+                    priority: 2,
+                    notes: "Need chapters 10-12",
                     todos: [
                         { text: "Write Chapter 10: Reading the Unspoken", completed: false },
                         { text: "Add citations to chapters 4 & 6", completed: false },
@@ -706,6 +748,8 @@
                     wordCount: 15000,
                     targetDate: "2026-03-01",
                     description: "Fiction project - early draft stage",
+                    priority: 3,
+                    notes: "Character development phase",
                     todos: [
                         { text: "Outline remaining chapters", completed: false },
                         { text: "Develop main character arc", completed: false },
@@ -718,6 +762,8 @@
                     wordCount: 8000,
                     targetDate: "2026-06-01",
                     description: "Fiction project - early draft stage",
+                    priority: 4,
+                    notes: "Exploring initial ideas",
                     todos: [
                         { text: "Complete character profiles", completed: false },
                         { text: "Draft opening three chapters", completed: false },
@@ -785,15 +831,19 @@
                 wordCount,
                 targetDate,
                 description,
-                todos: []
+                todos: [],
+                notes: '',
+                priority: editingProjectId ? undefined : projects.length + 1
             };
 
             updateSyncStatus(false);
 
             if (editingProjectId) {
                 const existingProject = projects.find(p => p.id === editingProjectId);
-                if (existingProject && existingProject.todos) {
-                    projectData.todos = existingProject.todos;
+                if (existingProject) {
+                    projectData.todos = existingProject.todos || [];
+                    projectData.notes = existingProject.notes || '';
+                    projectData.priority = existingProject.priority;
                 }
                 update(ref(database, `projects/${editingProjectId}`), projectData).then(() => {
                     closeProjectModal();
@@ -811,6 +861,18 @@
                 updateSyncStatus(false);
                 remove(ref(database, `projects/${projectId}`));
             }
+        };
+
+        window.updateProjectNotes = function(projectId, notes) {
+            const words = notes.trim().split(/\s+/).filter(w => w.length > 0);
+            if (words.length > 10) {
+                const limited = words.slice(0, 10).join(' ');
+                document.getElementById(`notes_${projectId}`).value = limited;
+                return;
+            }
+
+            updateSyncStatus(false);
+            update(ref(database, `projects/${projectId}`), { notes });
         };
 
         window.addTodo = function(projectId) {
@@ -860,6 +922,62 @@
             return badges[status] || badges['early'];
         }
 
+        // Drag and drop functionality
+        function handleDragStart(e) {
+            draggedElement = e.currentTarget;
+            e.currentTarget.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            
+            const afterElement = getDragAfterElement(e.currentTarget.parentElement, e.clientY);
+            if (afterElement == null) {
+                e.currentTarget.parentElement.appendChild(draggedElement);
+            } else {
+                e.currentTarget.parentElement.insertBefore(draggedElement, afterElement);
+            }
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            e.currentTarget.classList.remove('dragging');
+            
+            // Update priorities based on new order
+            const projectElements = document.querySelectorAll('.project-card');
+            const updates = {};
+            
+            projectElements.forEach((el, index) => {
+                const projectId = el.dataset.projectId;
+                updates[projectId] = index + 1;
+            });
+            
+            // Update Firebase with new priorities
+            updateSyncStatus(false);
+            Object.entries(updates).forEach(([projectId, priority]) => {
+                update(ref(database, `projects/${projectId}`), { priority });
+            });
+        }
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.project-card:not(.dragging)')];
+            
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
         function renderProjects() {
             const container = document.getElementById('projectsList');
             
@@ -868,18 +986,22 @@
                 return;
             }
 
-            const sortedProjects = [...projects].sort((a, b) => {
-                const order = { complete: 0, active: 1, early: 2 };
-                return (order[a.status] || 3) - (order[b.status] || 3);
-            });
+            const sortedProjects = [...projects].sort((a, b) => (a.priority || 999) - (b.priority || 999));
 
             const html = sortedProjects.map(project => {
                 const todos = project.todos || [];
                 const completedCount = todos.filter(t => t.completed).length;
                 const progressPercent = todos.length > 0 ? (completedCount / todos.length * 100).toFixed(0) : 0;
+                const wordCount = project.notes ? project.notes.trim().split(/\s+/).filter(w => w.length > 0).length : 0;
 
                 return `
-                    <div class="project-card">
+                    <div class="project-card" 
+                         draggable="true" 
+                         data-project-id="${project.id}"
+                         ondragstart="handleDragStart(event)"
+                         ondragover="handleDragOver(event)"
+                         ondragend="handleDragEnd(event)">
+                        <div class="priority-badge">#${project.priority || '?'}</div>
                         <div class="project-header">
                             <div class="project-title">
                                 <h2>${project.name}</h2>
@@ -889,6 +1011,18 @@
                                 <button class="btn-small btn-edit" onclick="openEditProjectModal('${project.id}')">Edit</button>
                                 <button class="btn-small btn-delete" onclick="deleteProject('${project.id}')">Delete</button>
                             </div>
+                        </div>
+                        
+                        <div class="project-notes">
+                            <h3>📝 Session Notes (Max 10 words)</h3>
+                            <input 
+                                type="text" 
+                                id="notes_${project.id}"
+                                value="${project.notes || ''}"
+                                placeholder="Quick notes about this project..."
+                                oninput="updateProjectNotes('${project.id}', this.value)"
+                            >
+                            <div class="notes-counter">${wordCount} / 10 words</div>
                         </div>
                         
                         <div class="project-details">
@@ -939,6 +1073,11 @@
 
             container.innerHTML = html;
         }
+
+        // Make drag functions available globally
+        window.handleDragStart = handleDragStart;
+        window.handleDragOver = handleDragOver;
+        window.handleDragEnd = handleDragEnd;
     </script>
 </body>
 </html>
